@@ -305,136 +305,36 @@ class DataProcessor {
         }
     }
     
-    loadData() {
+    async loadData() {
         this.showLoading();
-        
-        // 데이터가 이미 로드되어 있으면 사용
-        if (window.serverData && window.serverData.length > 0) {
-            this.handleDataUpdate(window.serverData);
-            return;
-        }
-        
-        // 데이터 로드 시도 (최대 10초 대기)
-        let attempts = 0;
-        const maxAttempts = 20; // 10초 = 500ms * 20
-        const checkInterval = setInterval(() => {
-            if (window.serverData && window.serverData.length > 0) {
-                clearInterval(checkInterval);
-                this.handleDataUpdate(window.serverData);
-                return;
-            }
-            
-            attempts++;
-            if (attempts >= maxAttempts) {
-                clearInterval(checkInterval);
-                this.hideLoading();
-                console.error('서버 데이터를 로드하지 못했습니다. 백업 데이터 생성을 시도합니다.');
-                this.createBackupData();
-            }
-        }, 500);
-    }
-    
-    // 백업 데이터 생성 함수
-    createBackupData() {
-        console.log('백업 데이터 생성 시도...');
-        
         try {
-            // 1. generateDummyData 함수 검사 및 호출
-            if (typeof generateDummyData === 'function') {
-                window.serverData = generateDummyData(10); // 30개에서 10개로 줄임
-                if (window.serverData && window.serverData.length > 0) {
-                    this.handleDataUpdate(window.serverData);
-                    return;
-                }
-            }
-            
-            // 2. generateDummyData가 없거나 실패한 경우 직접 더미 데이터 생성
-            console.log('기본 더미 데이터 생성...');
-            const backupServers = [];
-            
-            // 기본 더미 서버 10대 생성
-            for (let i = 1; i <= 10; i++) {
-                // 약 30%의 확률로 문제 있는 서버 생성
-                const hasProblem = Math.random() < 0.3;
-                const problemLevel = hasProblem ? (Math.random() < 0.3 ? 'critical' : 'warning') : 'normal';
-                
-                const cpuUsage = problemLevel === 'critical' ? 
-                    Math.floor(Math.random() * 10) + 90 : // 90-99%
-                    problemLevel === 'warning' ? 
-                        Math.floor(Math.random() * 20) + 70 : // 70-89%
-                        Math.floor(Math.random() * 50) + 10; // 10-59%
-                
-                const memoryUsage = problemLevel === 'critical' ? 
-                    Math.floor(Math.random() * 10) + 90 : // 90-99%
-                    problemLevel === 'warning' ? 
-                        Math.floor(Math.random() * 20) + 70 : // 70-89%
-                        Math.floor(Math.random() * 50) + 10; // 10-59%
-                
-                const diskUsage = problemLevel === 'critical' ? 
-                    Math.floor(Math.random() * 10) + 90 : // 90-99%
-                    problemLevel === 'warning' ? 
-                        Math.floor(Math.random() * 20) + 70 : // 70-89%
-                        Math.floor(Math.random() * 50) + 20; // 20-69%
-                
-                backupServers.push({
-                    hostname: `server-${i}`,
-                    os: 'Linux',
-                    uptime: '3 days, 12:30:15',
-                    cpu_usage: cpuUsage,
-                    memory_usage_percent: memoryUsage,
-                    memory_total: '16GB',
-                    memory_used: '8GB',
-                    disk: [{
-                        mount: '/',
-                        disk_total: '500GB',
-                        disk_used: '300GB',
-                        disk_usage_percent: diskUsage
-                    }],
-                    load_avg_1m: (Math.random() * 5).toFixed(2),
-                    load_avg_5m: (Math.random() * 4).toFixed(2),
-                    load_avg_15m: (Math.random() * 3).toFixed(2),
-                    process_count: Math.floor(Math.random() * 200) + 50,
-                    zombie_count: Math.floor(Math.random() * 3),
-                    timestamp: new Date().toISOString(),
-                    net: {
-                        interface: 'eth0',
-                        rx_bytes: Math.floor(Math.random() * 1000000),
-                        tx_bytes: Math.floor(Math.random() * 1000000),
-                        rx_errors: Math.floor(Math.random() * 10),
-                        tx_errors: Math.floor(Math.random() * 10)
-                    },
-                    services: {
-                        'nginx': problemLevel === 'critical' ? 'stopped' : 'running',
-                        'mysql': Math.random() > 0.9 ? 'stopped' : 'running',
-                        'redis': Math.random() > 0.9 ? 'stopped' : 'running'
-                    },
-                    errors: problemLevel !== 'normal' ? 
-                        [problemLevel === 'critical' ? 'Critical: 서버 응답 없음' : '경고: 높은 부하 감지'] : []
-                });
-            }
-            
-            // 전역 변수에 저장 및 이벤트 발생
-            window.serverData = backupServers;
-            this.handleDataUpdate(backupServers);
-            
-            // 이벤트 발생시키기
-            const event = new CustomEvent('serverDataUpdated', { 
-                detail: backupServers 
-            });
-            window.dispatchEvent(event);
-            
-        } catch (error) {
-            console.error('백업 데이터 생성 중 오류:', error);
-            
-            // 최종 실패 시 오류 메시지 표시
-            this.serverGrid.innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-triangle"></i>
-                    서버 데이터를 로드하지 못했습니다. 새로고침 버튼을 클릭하여 다시 시도해 주세요.
-                </div>
-            `;
+            const res = await fetch('/api/servers/metrics');
+            if (!res.ok) throw new Error('서버 데이터 로드 실패');
+            const data = await res.json();
+            const arr = Object.values(data);
+            this.handleDataUpdate(arr);
+        } catch (e) {
+            this.hideLoading();
+            this.serverGrid.innerHTML = `<div class="alert alert-danger">서버 데이터를 불러오지 못했습니다. 새로고침 해주세요.</div>`;
         }
     }
+
+    async refreshData() {
+        this.showLoading();
+        try {
+            const res = await fetch('/api/servers/metrics');
+            if (!res.ok) throw new Error('서버 데이터 새로고침 실패');
+            const data = await res.json();
+            const arr = Object.values(data);
+            this.handleDataUpdate(arr);
+        } catch (e) {
+            this.hideLoading();
+            this.serverGrid.innerHTML = `<div class="alert alert-danger">서버 데이터를 새로고침하지 못했습니다.</div>`;
+        }
+    }
+
+    // createBackupData는 더 이상 사용하지 않으므로 빈 함수로 대체
+    createBackupData() {}
     
     handleDataUpdate(data) {
         this.serverData = [...data]; // 데이터 복사
@@ -593,97 +493,6 @@ class DataProcessor {
                 badgeElement.className = 'badge bg-success';
                 badgeElement.textContent = `정상 (${normalServers.length})`;
             }
-        }
-    }
-    
-    refreshData() {
-        this.showLoading();
-        
-        // 새로고침 버튼 상태 업데이트
-        const refreshBtn = document.getElementById('refreshBtn');
-        if (refreshBtn) {
-            refreshBtn.classList.add('loading');
-            refreshBtn.setAttribute('disabled', 'disabled');
-            const refreshContent = refreshBtn.querySelector('.refresh-content');
-            const loadingContent = refreshBtn.querySelector('.loading-content');
-            
-            if (refreshContent) refreshContent.style.display = 'none';
-            if (loadingContent) loadingContent.style.display = 'inline-block';
-        }
-        
-        // 페이지 재로드가 아닌 데이터만 새로 생성
-        if (typeof generateDummyData === 'function') {
-            try {
-                console.log('더미 데이터 다시 생성...');
-                window.serverData = generateDummyData(10); // 30개에서 10개로 줄임
-                
-                // 데이터 업데이트 이벤트 발생시키기
-                const event = new CustomEvent('serverDataUpdated', { 
-                    detail: window.serverData 
-                });
-                window.dispatchEvent(event);
-                
-                // 3초 후 로딩 숨기기 (새로고침 효과)
-                setTimeout(() => {
-                    this.hideLoading();
-                    
-                    // 새로고침 버튼 상태 복원
-                    this.resetRefreshButton(refreshBtn);
-                }, 3000);
-                
-                return;
-            } catch (e) {
-                console.error('데이터 새로고침 중 오류:', e);
-                // 오류 발생 시 원래 데이터로 UI 복원
-                this.hideLoading();
-                this.resetRefreshButton(refreshBtn);
-                
-                // 오류 메시지 표시
-                const errorAlert = document.createElement('div');
-                errorAlert.className = 'alert alert-danger alert-dismissible fade show';
-                errorAlert.innerHTML = `
-                    <strong>오류 발생!</strong> 데이터를 새로고침하는 중 문제가 발생했습니다.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                `;
-                
-                // 서버 그리드 위에 오류 메시지 삽입
-                const parent = this.serverGrid.parentNode;
-                parent.insertBefore(errorAlert, this.serverGrid);
-                
-                // 5초 후 자동으로 오류 메시지 제거
-                setTimeout(() => {
-                    if (errorAlert.parentNode) {
-                        errorAlert.parentNode.removeChild(errorAlert);
-                    }
-                }, 5000);
-                
-                return;
-            }
-        }
-        
-        // 데이터가 업데이트되면 serverDataUpdated 이벤트로 처리됨
-        // 하지만 10초 내에 업데이트가 없으면 현재 데이터로 UI 다시 로드
-        setTimeout(() => {
-            if (this.loadingIndicator.style.display !== 'none') {
-                this.hideLoading();
-                this.applyFiltersAndSort();
-                
-                // 새로고침 버튼 상태 복원
-                this.resetRefreshButton(refreshBtn);
-            }
-        }, 10000);
-    }
-    
-    // 새로고침 버튼 상태 초기화 유틸리티 메소드
-    resetRefreshButton(refreshBtn) {
-        if (refreshBtn) {
-            refreshBtn.classList.remove('loading');
-            refreshBtn.removeAttribute('disabled');
-            const refreshContent = refreshBtn.querySelector('.refresh-content');
-            const loadingContent = refreshBtn.querySelector('.loading-content');
-            
-            if (refreshContent) refreshContent.style.display = 'inline-block';
-            if (loadingContent) loadingContent.style.display = 'none';
         }
     }
     
