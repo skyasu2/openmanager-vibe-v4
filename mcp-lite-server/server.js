@@ -4,7 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
-const dummyK8s = require('./dummyK8sDataGenerator');
+const k8sDataGenerator = require('./utils/k8sDataGenerator');
 const aiAgent = require('./ai_agent');
 const supabase = require('./supabaseClient');
 const demoScenarioManager = require('./demoScenarioManager');
@@ -49,13 +49,13 @@ app.post('/query', (req, res) => {
 
 // 기본 서버 메트릭 API
 app.get('/api/servers/metrics', (req, res) => {
-  res.json(dummyK8s.getCurrentMetrics());
+  res.json(k8sDataGenerator.getCurrentMetrics());
 });
 
 // 데모 모드 API - 상태 시나리오 기반 메트릭
 app.get('/api/demo/metrics', (req, res) => {
   // 기본 메트릭을 시나리오 매니저에 제공
-  demoScenarioManager.setBaseMetrics(dummyK8s.getCurrentMetrics());
+  demoScenarioManager.setBaseMetrics(k8sDataGenerator.getCurrentMetrics());
   
   // 현재 시나리오에 따른 데모 메트릭 생성 및 반환
   const demoMetrics = demoScenarioManager.generateDemoMetrics();
@@ -63,20 +63,20 @@ app.get('/api/demo/metrics', (req, res) => {
 });
 
 app.get('/api/servers/:id/metrics', (req, res) => {
-  res.json(dummyK8s.getNodeMetrics(req.params.id));
+  res.json(k8sDataGenerator.getNodeMetrics(req.params.id));
 });
 app.get('/api/servers/metrics/history', (req, res) => {
-  res.json(dummyK8s.getHistory());
+  res.json(k8sDataGenerator.getHistory());
 });
 app.get('/api/incidents', (req, res) => {
-  res.json(dummyK8s.getIncidents());
+  res.json(k8sDataGenerator.getIncidents());
 });
 
 app.post('/api/ai/query', (req, res) => {
   const { userId = 'default', question } = req.body;
   if (!question) return res.status(400).json({ error: '질문이 필요합니다.' });
   // 최신 메트릭 데이터 사용
-  const metrics = Object.values(dummyK8s.getCurrentMetrics());
+  const metrics = Object.values(k8sDataGenerator.getCurrentMetrics());
   const result = aiAgent.handleUserQuery(userId, question, metrics);
   res.json(result);
 });
