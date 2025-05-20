@@ -22,6 +22,10 @@ class DataProcessor {
             this.currentProblemPage = 1;
             this.problemsPerPage = 5; // 페이지당, 처음에 표시될 문제 수
             
+            // 로딩 상태 관리
+            this.isLoading = false;
+            this.cardLoadingStates = {}; // 서버 ID별 로딩 상태를 추적
+            
             // 초기화 로깅
             console.log('DataProcessor 초기화 시작...');
             
@@ -92,19 +96,15 @@ class DataProcessor {
             // 기본 필수 함수들은 최소한으로라도 구현
             if (!this.showLoading) {
                 this.showLoading = function() {
-                    const loadingIndicator = document.getElementById('loadingIndicator');
-                    const serverGrid = document.getElementById('serverGrid');
-                    if (loadingIndicator) loadingIndicator.style.display = 'block';
-                    if (serverGrid) serverGrid.style.opacity = '0.3';
+                    this.updateLoadingStatus(true);
+                    this.updateQueryInputStatus(true);
                 };
             }
             
             if (!this.hideLoading) {
                 this.hideLoading = function() {
-                    const loadingIndicator = document.getElementById('loadingIndicator');
-                    const serverGrid = document.getElementById('serverGrid');
-                    if (loadingIndicator) loadingIndicator.style.display = 'none';
-                    if (serverGrid) serverGrid.style.opacity = '1';
+                    this.updateLoadingStatus(false);
+                    this.updateQueryInputStatus(false);
                 };
             }
             
@@ -244,6 +244,106 @@ class DataProcessor {
         }
     }
     
+    // 로딩 상태 관리 업데이트 함수
+    updateLoadingStatus(isLoading, serverId = null) {
+        this.isLoading = isLoading;
+        
+        // 특정 서버 카드만 로딩 처리
+        if (serverId) {
+            this.cardLoadingStates[serverId] = isLoading;
+            this.updateServerCardLoading(serverId, isLoading);
+            return;
+        }
+        
+        // 전체 로딩 인디케이터 대신 각 서버 카드에 로딩 상태 표시
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        if (loadingIndicator) {
+            // 전역 로딩은 더 이상 사용하지 않음
+            loadingIndicator.style.display = 'none';
+        }
+        
+        // 모든 서버 카드에 로딩 상태 적용
+        const serverItems = document.querySelectorAll('.server-item');
+        serverItems.forEach(item => {
+            if (item && item.id) {
+                this.cardLoadingStates[item.id] = isLoading;
+                this.updateServerCardLoading(item.id, isLoading);
+            }
+        });
+        
+        // 최근 장애 서버 카드에도 로딩 상태 적용
+        const alertCards = document.querySelectorAll('.alert-card');
+        alertCards.forEach(card => {
+            if (isLoading) {
+                card.classList.add('pulse-animation');
+            } else {
+                card.classList.remove('pulse-animation');
+            }
+        });
+    }
+    
+    // 서버 카드 로딩 상태 업데이트
+    updateServerCardLoading(serverId, isLoading) {
+        const serverCard = document.getElementById(serverId);
+        if (!serverCard) return;
+
+        const loadingIndicator = serverCard.querySelector('.card-loading-indicator');
+        
+        if (isLoading) {
+            serverCard.classList.add('server-card-loading');
+            
+            // 로딩 표시자가 없으면 새로 생성
+            if (!loadingIndicator) {
+                const indicator = document.createElement('div');
+                indicator.className = 'card-loading-indicator';
+                indicator.innerHTML = `
+                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                    <span>분석 중...</span>
+                `;
+                serverCard.appendChild(indicator);
+            } else {
+                loadingIndicator.style.display = 'flex';
+            }
+        } else {
+            serverCard.classList.remove('server-card-loading');
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+    }
+    
+    // 질문 입력 상태 업데이트
+    updateQueryInputStatus(isLoading) {
+        const queryBtn = document.getElementById('aiQueryBtn');
+        const queryInput = document.getElementById('aiQuery');
+        const queryExamples = document.querySelectorAll('.query-example');
+        const statusMessage = document.getElementById('queryStatusMessage');
+        
+        if (queryBtn && queryInput) {
+            queryBtn.disabled = isLoading;
+            queryInput.disabled = isLoading;
+            
+            // 질문 예시 버튼도 비활성화
+            queryExamples.forEach(btn => {
+                btn.disabled = isLoading;
+                if (isLoading) {
+                    btn.classList.add('opacity-50');
+                } else {
+                    btn.classList.remove('opacity-50');
+                }
+            });
+            
+            // 상태 메시지 표시/숨김
+            if (statusMessage) {
+                if (isLoading) {
+                    statusMessage.style.display = 'block';
+                } else {
+                    statusMessage.style.display = 'none';
+                }
+            }
+        }
+    }
+    
     // 기존 loadData 메서드 수정
     async loadData() {
         // 데모 모드일 경우 데모 데이터 로드
@@ -260,9 +360,55 @@ class DataProcessor {
             const arr = Object.values(data);
             this.handleDataUpdate(arr);
         } catch (e) {
+            console.error('데이터 로드 실패:', e);
             this.hideLoading();
-            this.serverGrid.innerHTML = `<div class="alert alert-danger">서버 데이터를 불러오지 못했습니다. 새로고침 해주세요.</div>`;
+            
+            // 서버 그리드에 오류 메시지 표시
+            const serverList = document.getElementById('serverListContainer');
+            if (serverList) {
+                serverList.innerHTML = `
+                    <div class="p-4 text-center">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            서버 데이터를 불러오지 못했습니다.
+                            <button class="btn btn-sm btn-outline-primary ms-3" onclick="window.location.reload()">
+                                <i class="fas fa-sync-alt me-1"></i> 새로고침
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 폴백 데이터 사용 (미리 저장된 샘플 데이터)
+            this.useFallbackData();
         }
+    }
+    
+    // 폴백 데이터 사용 함수
+    useFallbackData() {
+        // 미리 저장된 샘플 데이터 사용
+        const fallbackData = [
+            {
+                hostname: 'server-fallback-01',
+                status: 'warning',
+                ip: '192.168.1.101',
+                cpu_usage: 75,
+                memory_usage_percent: 68,
+                disk: [{ disk_usage_percent: 65 }],
+                errors: ["서버 연결 실패"],
+                services: {
+                    'nginx': 'running',
+                    'mysql': 'stopped'
+                }
+            }
+        ];
+        
+        this.serverData = fallbackData;
+        this.filteredData = fallbackData;
+        this.renderServerGrid();
+        
+        // 사용자에게 폴백 데이터 사용 중임을 알림
+        this.showAlert('연결 실패로 오프라인 데이터를 표시합니다.', 'warning');
     }
     
     // 기존 refreshData 메서드 수정
@@ -273,7 +419,15 @@ class DataProcessor {
             return;
         }
         
-        this.showLoading();
+        // 부분 로딩만 표시 (UI 차단 없음)
+        const partialLoading = true;
+        if (partialLoading) {
+            // 각 카드별 로딩만 표시
+            this.updateLoadingStatus(true);
+        } else {
+            this.showLoading();
+        }
+        
         try {
             const res = await fetch('/api/servers/metrics');
             if (!res.ok) throw new Error('서버 데이터 새로고침 실패');
@@ -281,9 +435,11 @@ class DataProcessor {
             const arr = Object.values(data);
             this.handleDataUpdate(arr);
         } catch (e) {
-            this.hideLoading();
-            // refreshData는 자동 호출되므로 실패해도 UI에 에러 표시 안함
             console.error('데이터 새로고침 실패:', e);
+            this.hideLoading();
+            
+            // 새로고침 실패 시 상태 표시줄에 경고 메시지
+            this.showAlert('서버 데이터 새로고침 실패. 연결을 확인해 주세요.', 'warning');
         }
     }
     
@@ -302,7 +458,8 @@ class DataProcessor {
         
         // 3초 후 자동 제거
         setTimeout(() => {
-            alertDiv.remove();
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 300);
         }, 3000);
     }
     

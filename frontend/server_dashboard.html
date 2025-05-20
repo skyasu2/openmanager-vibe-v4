@@ -402,6 +402,70 @@
         .pulse-animation {
             animation: pulse 2s infinite;
         }
+
+        /* 스켈레톤 로딩 애니메이션 */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        .skeleton-loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite linear;
+            border-radius: 4px;
+        }
+
+        .skeleton-text {
+            height: 16px;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        .skeleton-text.short {
+            width: 60%;
+        }
+
+        .skeleton-metric {
+            height: 24px;
+            margin-bottom: 12px;
+            width: 100%; 
+        }
+
+        .server-card-loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* 카드별 로딩 표시자 */
+        .card-loading-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.8rem;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 5;
+        }
+
+        .card-loading-indicator .spinner-border {
+            width: 12px;
+            height: 12px;
+            border-width: 2px;
+        }
+
+        /* 로딩 상태 안내 메시지 */
+        .loading-status-message {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-top: 5px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -480,6 +544,11 @@
                 <button id="aiQueryBtn" class="btn btn-primary">
                     <i class="fas fa-search me-1"></i> 분석
                 </button>
+            </div>
+            
+            <!-- 로딩 상태 안내 메시지 추가 -->
+            <div id="queryStatusMessage" class="loading-status-message">
+                서버 상태 데이터를 수신 중입니다...
             </div>
             
             <div class="query-examples">
