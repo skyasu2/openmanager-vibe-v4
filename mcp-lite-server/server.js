@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3000;
 const dummyK8s = require('./dummyK8sDataGenerator');
 const aiAgent = require('./ai_agent');
 const supabase = require('./supabaseClient');
+const demoScenarioManager = require('./demoScenarioManager');
 
 // 라우터 가져오기
 const logsRouter = require('./routes/logs');
@@ -46,9 +47,21 @@ app.post('/query', (req, res) => {
   res.json({ result: matched || '관련 내용을 찾지 못했습니다' });
 });
 
+// 기본 서버 메트릭 API
 app.get('/api/servers/metrics', (req, res) => {
   res.json(dummyK8s.getCurrentMetrics());
 });
+
+// 데모 모드 API - 상태 시나리오 기반 메트릭
+app.get('/api/demo/metrics', (req, res) => {
+  // 기본 메트릭을 시나리오 매니저에 제공
+  demoScenarioManager.setBaseMetrics(dummyK8s.getCurrentMetrics());
+  
+  // 현재 시나리오에 따른 데모 메트릭 생성 및 반환
+  const demoMetrics = demoScenarioManager.generateDemoMetrics();
+  res.json(demoMetrics);
+});
+
 app.get('/api/servers/:id/metrics', (req, res) => {
   res.json(dummyK8s.getNodeMetrics(req.params.id));
 });
