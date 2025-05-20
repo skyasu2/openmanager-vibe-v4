@@ -4,6 +4,12 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const dummyK8s = require('./dummyK8sDataGenerator');
+const aiAgent = require('./ai_agent');
+const supabase = require('./supabaseClient');
+
+// 라우터 가져오기
+const logsRouter = require('./routes/logs');
 
 // CORS 설정 - 개발 환경과 Netlify 도메인 허용
 app.use(cors({
@@ -16,6 +22,9 @@ app.use(cors({
   credentials: true
 }));
 app.use(bodyParser.json());
+
+// 라우터 마운트
+app.use('/logs', logsRouter);
 
 app.post('/query', (req, res) => {
   const { query, context } = req.body;
@@ -35,6 +44,28 @@ app.post('/query', (req, res) => {
   const matched = lines.find(line => query.split(' ').some(word => line.includes(word)));
 
   res.json({ result: matched || '관련 내용을 찾지 못했습니다' });
+});
+
+app.get('/api/servers/metrics', (req, res) => {
+  res.json(dummyK8s.getCurrentMetrics());
+});
+app.get('/api/servers/:id/metrics', (req, res) => {
+  res.json(dummyK8s.getNodeMetrics(req.params.id));
+});
+app.get('/api/servers/metrics/history', (req, res) => {
+  res.json(dummyK8s.getHistory());
+});
+app.get('/api/incidents', (req, res) => {
+  res.json(dummyK8s.getIncidents());
+});
+
+app.post('/api/ai/query', (req, res) => {
+  const { userId = 'default', question } = req.body;
+  if (!question) return res.status(400).json({ error: '질문이 필요합니다.' });
+  // 최신 메트릭 데이터 사용
+  const metrics = Object.values(dummyK8s.getCurrentMetrics());
+  const result = aiAgent.handleUserQuery(userId, question, metrics);
+  res.json(result);
 });
 
 app.listen(PORT, () => {
