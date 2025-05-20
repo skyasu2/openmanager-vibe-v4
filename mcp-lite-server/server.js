@@ -5,9 +5,10 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Netlify 도메인만 허용하도록 CORS 설정
+// CORS 설정 - 개발 환경과 Netlify 도메인 허용
 app.use(cors({
-  origin: 'https://openvibe3.netlify.app'
+  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://openvibe3.netlify.app'],
+  credentials: true
 }));
 app.use(bodyParser.json());
 
