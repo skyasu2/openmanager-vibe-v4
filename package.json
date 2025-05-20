@@ -1,0 +1,24 @@
+{
+  "name": "openmanager-vibe-v4",
+  "version": "1.0.0",
+  "description": "자연어 기반 서버 분석 및 모니터링 시스템",
+  "main": "mcp-lite-server/server.js",
+  "scripts": {
+    "start": "cd mcp-lite-server && npm install && node server.js",
+    "build": "echo 'No build step required'"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skyasu2/openmanager-vibe-v4.git"
+  },
+  "keywords": [
+    "server",
+    "monitoring",
+    "analytics"
+  ],
+  "author": "",
+  "license": "UNLICENSED"
+} 
