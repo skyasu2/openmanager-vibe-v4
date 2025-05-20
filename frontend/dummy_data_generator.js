@@ -125,12 +125,39 @@ class DummyDataGenerator {
         this.dayHours = 24;
         this.currentHour = new Date().getHours(); // 현재 시간으로 초기화
         
-        // 서버 데이터 초기화 - 첫 배치만 즉시 생성
-        this.serverData = [];
-        this.generateInitialBatch();
+        // 서버 데이터 초기화 - 캐시 우선
+        this.serverData = this.loadFromCache() || [];
+        if (this.serverData.length === this.serverCount) {
+            window.serverData = this.serverData;
+            this.dispatchUpdateEvent();
+        } else {
+            this.generateInitialBatch();
+        }
         
         // 데이터 자동 업데이트 시작
         this.startDataUpdates();
+    }
+    
+    // localStorage에서 데이터 불러오기
+    loadFromCache() {
+        try {
+            const cached = localStorage.getItem(this.localStorageKey);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Array.isArray(parsed) && parsed.length === this.serverCount) {
+                    this.memoizedData = parsed;
+                    return parsed;
+                }
+            }
+        } catch (e) { /* 무시 */ }
+        return null;
+    }
+
+    // localStorage에 데이터 저장
+    saveToCache(data) {
+        try {
+            localStorage.setItem(this.localStorageKey, JSON.stringify(data));
+        } catch (e) { /* 무시 */ }
     }
     
     // 초기 서버 배치 데이터 생성 (빠른 로딩을 위해 일부만 생성)
@@ -167,6 +194,10 @@ class DummyDataGenerator {
     
     // 서버 구성에 맞게 서버 생성
     createServerByConfiguration(index) {
+        if (this.memoizedData && this.memoizedData[index]) {
+            return this.memoizedData[index];
+        }
+        
         // 총 개수를 확인해서 어떤 유형의 서버를 생성할지 결정
         let currentCount = 0;
         let selectedConfig = null;
@@ -287,6 +318,9 @@ class DummyDataGenerator {
             // status 필드는 ai_processor에서 결정하므로 여기서는 생성하지 않음
         };
         
+        if (!this.memoizedData) this.memoizedData = [];
+        this.memoizedData[index] = server;
+        this.saveToCache(this.memoizedData);
         return server;
     }
     
