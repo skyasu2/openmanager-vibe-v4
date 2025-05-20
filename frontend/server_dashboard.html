@@ -67,1460 +67,831 @@
             color: #4a69bd;
         }
         
-        /* 서버 카드 스타일 개선 */
-        .server-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+        /* 알림 섹션 */
+        .alert-section {
             margin-bottom: 20px;
         }
         
-        .server-card {
+        .alert-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .alert-card {
             background-color: #fff;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            padding: 15px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            position: relative;
-            overflow: hidden;
-            background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.7) 100%);
-            backdrop-filter: blur(10px);
-            cursor: pointer;
-            height: auto;
-            min-height: 140px;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .server-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-color: rgba(0, 0, 0, 0.1);
-            background-image: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(245, 247, 250, 0.9) 100%);
-        }
-        
-        .server-card:hover::after {
-            content: '클릭하여 자세히 보기';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: rgba(74, 105, 189, 0.9);
-            color: white;
-            padding: 5px;
-            font-size: 0.75rem;
-            text-align: center;
-            transform: translateY(0);
-            transition: transform 0.3s ease;
-            border-radius: 0 0 12px 12px;
-        }
-        
-        /* 서버 카드 눌림 효과 */
-        .server-card:active {
-            transform: translateY(0);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .server-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 4px;
-            width: 100%;
-            background: linear-gradient(90deg, #4a69bd, #2c3e50);
-        }
-        
-        /* 상태에 따른 카드 스타일 */
-        .server-card.status-warning::before {
-            background: linear-gradient(90deg, #ff8f00, #ffa000);
-        }
-        
-        .server-card.status-critical::before {
-            background: linear-gradient(90deg, #d32f2f, #b71c1c);
-        }
-        
-        /* 상태에 따른 추가 스타일 */
-        .server-card.status-critical {
-            border-left: 3px solid #d32f2f;
-        }
-        
-        .server-card.status-warning {
-            border-left: 3px solid #ff8f00;
-        }
-        
-        .server-card.status-normal {
-            border-left: 3px solid #4caf50;
-        }
-        
-        /* 컴팩트 서버 카드 레이아웃 */
-        .server-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .server-name {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #2c3e50;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 180px;
-        }
-        
-        .server-status {
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 30px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s;
-        }
-        
-        .server-status:hover {
-            transform: scale(1.05);
-        }
-        
-        .status-normal {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-        }
-        
-        .status-warning {
-            background-color: #fff8e1;
-            color: #ff8f00;
-        }
-        
-        .status-critical {
-            background-color: #ffebee;
-            color: #d32f2f;
-        }
-        
-        /* 컴팩트 메트릭 스타일 */
-        .server-metrics {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .metric-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-        
-        .metric-label {
-            font-size: 0.7rem;
-            color: #7f8c8d;
-            margin-right: 10px;
-            min-width: 80px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .metric-label::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 6px;
-            background-color: #4a69bd;
-        }
-        
-        .metric-item:nth-child(2) .metric-label::before {
-            background-color: #3498db;
-        }
-        
-        .metric-item:nth-child(3) .metric-label::before {
-            background-color: #2ecc71;
-        }
-        
-        .metric-item:nth-child(4) .metric-label::before {
-            background-color: #9b59b6;
-        }
-        
-        .metric-value {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-right: 10px;
-            min-width: 45px;
-        }
-        
-        /* 프로그레스 바 스타일 개선 */
-        .progress-bar-container {
-            height: 6px;
-            border-radius: 3px;
-            overflow: hidden;
-            background-color: #f1f1f1;
-            margin-top: 3px;
-            position: relative;
-        }
-        
-        .progress-bar {
-            border-radius: 3px;
-            transition: width 0.5s ease;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            height: 100%;
-        }
-        
-        .progress-normal {
-            background: linear-gradient(90deg, #2ecc71, #27ae60);
-        }
-        
-        .progress-warning {
-            background: linear-gradient(90deg, #f39c12, #e67e22);
-        }
-        
-        .progress-critical {
-            background: linear-gradient(90deg, #e74c3c, #c0392b);
-        }
-        
-        /* 메트릭 값 텍스트 스타일 개선 */
-        .detail-value {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-right: 10px;
-            min-width: 45px;
-            transition: color 0.3s ease;
-        }
-        
-        .detail-value.text-success {
-            color: #27ae60 !important;
-            text-shadow: 0 0 1px rgba(39, 174, 96, 0.2);
-        }
-        
-        .detail-value.text-warning {
-            color: #e67e22 !important;
-            text-shadow: 0 0 1px rgba(230, 126, 34, 0.2);
-        }
-        
-        .detail-value.text-danger {
-            color: #c0392b !important;
-            text-shadow: 0 0 1px rgba(192, 57, 43, 0.2);
-        }
-        
-        .main-content-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        @media (max-width: 1100px) {
-            .main-content-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .dashboard-section {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .section-header {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            align-items: center;
-        }
-        
-        .filter-container {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .chart-container {
-            height: 300px;
-            position: relative;
-        }
-
-        /* AI 질의 컨테이너 */
-        .ai-query-container {
-            background: linear-gradient(to right, rgba(78, 115, 223, 0.05), rgba(78, 115, 223, 0.01));
-            border-left: 4px solid var(--primary);
-            padding: var(--spacing-lg);
-            margin-bottom: var(--spacing-lg);
-            transition: transform 0.3s ease;
-        }
-
-        .ai-query-container:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .query-input {
-            width: 100%;
-            padding: 12px 15px;
-            border-radius: var(--border-radius-md);
-            border: 1px solid var(--border);
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .query-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .query-loading {
-            display: none;
-            text-align: center;
-            margin: var(--spacing-md) 0;
-        }
-
-        .query-loading.active {
-            display: block;
-        }
-
-        .query-result {
-            display: none;
-            background-color: var(--background);
-            border-radius: var(--border-radius-md);
-            padding: var(--spacing-md);
-            margin-top: var(--spacing-md);
-            white-space: pre-line;
-            border: 1px solid var(--border);
-            position: relative;
-            padding-top: 30px;
-        }
-        
-        .query-result.active {
-            display: block;
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-        
-        /* 닫기 버튼 스타일 */
-        #closeQueryResult {
-            transition: all 0.2s;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        #closeQueryResult:hover {
-            transform: scale(1.1);
-            background-color: #f8f9fa;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        
-        .close-button-container {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-        
-        /* 반응형 */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                padding: 10px;
-            }
-            
-            .logo {
-                margin-bottom: 10px;
-            }
-            
-            .nav-menu {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .nav-item {
-                margin: 0 5px;
-                padding: 5px 10px;
-                font-size: 14px;
-            }
-        }
-        
-        .error-badge {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 3px 8px;
-            background-color: #ffebee;
-            color: #d32f2f;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.3);
-            }
-            70% {
-                box-shadow: 0 0 0 5px rgba(211, 47, 47, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(211, 47, 47, 0);
-            }
-        }
-        
-        .service-status-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .service-status-tag {
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: all 0.2s ease;
-        }
-        
-        .service-status-tag:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        .service-status-tag.service-running {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
-        }
-        
-        .service-status-tag.service-stopped {
-            background-color: #ffebee;
-            color: #d32f2f;
-            border: 1px solid #ffcdd2;
-        }
-        
-        .status-indicator {
-            margin-left: 5px;
-            font-size: 0.75rem;
-            opacity: 0.8;
-        }
-        
-        /* 장애 프리셋 스타일 */
-        .preset-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .preset-tag {
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.25s;
-            background: white;
             box-shadow: var(--shadow-sm);
-            display: flex;
-            align-items: center;
-            border: 1px solid #e3e6f0;
-        }
-        
-        .preset-tag:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-3px);
-        }
-        
-        .preset-tag .badge {
-            margin-left: 8px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 4px 6px;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-        
-        .preset-tag:hover .badge {
-            transform: scale(1.1);
-        }
-        
-        .preset-tag.tag-critical {
+            padding: 15px;
             border-left: 4px solid var(--danger);
-            background-color: rgba(231, 74, 59, 0.05);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         
-        .preset-tag.tag-warning {
-            border-left: 4px solid var(--warning);
-            background-color: rgba(246, 194, 62, 0.05);
+        .alert-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
         }
         
-        .preset-tag.tag-normal {
-            border-left: 4px solid var(--success);
-            background-color: rgba(28, 200, 138, 0.05);
+        .alert-card.warning {
+            border-left-color: var(--warning);
         }
         
-        .preset-tag.active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        .alert-card.critical {
+            border-left-color: var(--danger);
         }
         
-        .preset-tag:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        
-        .badge.bg-danger {
-            background-color: var(--danger) !important;
-        }
-        
-        .badge.bg-warning {
-            background-color: var(--warning) !important;
-            color: #212529;
-        }
-        
-        .badge.bg-success {
-            background-color: var(--success) !important;
-        }
-        
-        /* 자동 장애 보고서 스타일 개선 */
-        .auto-report-container {
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
+        /* AI 분석 통합 박스 */
+        .ai-analysis-box {
             background-color: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            padding: 20px;
+            margin-bottom: 20px;
         }
         
-        .auto-report-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #f0f0f0;
-            margin-bottom: 15px;
-        }
-
-        /* 추가적인 반응형 디자인 개선 */
-        /* FHD (1920x1080) */
-        @media (min-width: 1920px) {
-            .container-fluid {
-                max-width: 1800px;
-                margin: 0 auto;
-            }
-            
-            .server-grid {
-                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            }
-        }
-        
-        /* QHD (2560x1440) */
-        @media (min-width: 2560px) {
-            .container-fluid {
-                max-width: 2400px;
-                margin: 0 auto;
-            }
-            
-            .server-grid {
-                grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            }
-            
-            .main-content-grid {
-                grid-template-columns: 3fr 1fr;
-            }
-        }
-        
-        /* 태블릿 디바이스 */
-        @media (max-width: 992px) {
-            .main-content-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .server-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            }
-        }
-        
-        /* 모바일 디바이스 */
-        @media (max-width: 768px) {
-            .server-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .nav-menu {
-                margin-top: 10px;
-            }
-            
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .section-header button {
-                margin-top: 10px;
-                margin-left: 0;
-            }
-            
-            .card-body .row {
-                flex-direction: column;
-            }
-            
-            .preset-container {
-                flex-direction: row;
-                overflow-x: auto;
-                padding-bottom: 10px;
-                margin-bottom: 5px;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .preset-tag {
-                flex: 0 0 auto;
-                white-space: nowrap;
-            }
-        }
-        
-        /* 작은 모바일 화면 */
-        @media (max-width: 480px) {
-            .container-fluid {
-                padding: 10px;
-            }
-            
-            h1.display-5 {
-                font-size: 1.8rem;
-            }
-            
-            .dashboard-section {
-                padding: 15px;
-            }
-            
-            .server-card {
-                padding: 15px;
-            }
-            
-            .pagination-container {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            #prevPageBtn, #nextPageBtn {
-                margin: 5px 0;
-            }
-        }
-
-        /* 자동 장애 보고서 반응형 조정 */
-        .auto-report-container {
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-        
-        @media (max-width: 768px) {
-            .auto-report-container {
-                max-height: 50vh;
-            }
-        }
-        
-        @media (min-width: 1600px) {
-            .auto-report-container {
-                max-height: 90vh;
-            }
-        }
-
-        /* 서비스 태그 스타일 추가 */
-        .services-container {
-            margin-top: 15px;
+        .query-examples {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-        }
-        
-        .service-tag {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.75rem;
-            display: inline-flex;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: all 0.2s ease;
-        }
-        
-        .service-tag:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        .service-tag.service-running {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
-        }
-        
-        .service-tag.service-stopped {
-            background-color: #ffebee;
-            color: #d32f2f;
-            border: 1px solid #ffcdd2;
-        }
-        
-        /* 반응형 그리드 개선 */
-        @media (min-width: 1400px) {
-            .server-grid {
-                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            }
-        }
-        
-        @media (min-width: 1700px) {
-            .server-grid {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            }
-        }
-        
-        @media (min-width: 2000px) {
-            .server-grid {
-                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            }
-        }
-        
-        /* 오른쪽 장애 패널 개선 */
-        .incident-panel {
-            position: sticky;
-            top: 20px;
-            max-height: calc(100vh - 40px);
-            overflow-y: auto;
-        }
-        
-        .collapsible-panel {
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            overflow: hidden;
-        }
-        
-        .collapsible-header {
-            background-color: #f8f9fa;
-            padding: 12px 15px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .collapsible-header:hover {
-            background-color: #f0f2f5;
-        }
-        
-        .collapsible-body {
-            padding: 15px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-        
-        .collapsible-body.expanded {
-            max-height: 500px;
-        }
-        
-        .collapse-toggle {
-            color: #6c757d;
-            transition: transform 0.3s ease;
-        }
-        
-        .collapse-toggle.expanded {
-            transform: rotate(180deg);
-        }
-        
-        /* 사이드바 토글 버튼 */
-        .sidebar-toggle {
-            position: fixed;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 4px 0 0 4px;
-            width: 30px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-        }
-        
-        .main-content-grid {
-            position: relative;
-            transition: grid-template-columns 0.3s ease;
-        }
-        
-        .main-content-grid.sidebar-hidden {
-            grid-template-columns: 1fr 0fr;
-        }
-        
-        .main-content-grid.sidebar-hidden .incident-panel {
-            display: none;
-        }
-        
-        /* 서비스 태그 간소화 */
-        .services-container {
             margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
         }
         
-        .service-tag {
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            display: inline-flex;
-            align-items: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-
-        /* 모달 스타일 개선 */
-        .modal-content {
+        .query-example {
+            background-color: var(--primary-light);
+            color: var(--primary);
             border: none;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .query-example:hover {
+            background-color: rgba(78, 115, 223, 0.2);
+        }
+        
+        .ai-response {
+            border: 1px solid var(--border);
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
+            padding: 15px;
+            margin-top: 15px;
+            background-color: #f8f9fc;
         }
         
-        .modal-header {
-            border-bottom: 1px solid #f0f0f0;
-            padding: 15px 20px;
-            background-color: #f8f9fa;
-        }
-        
-        .modal-title {
+        .ai-response-header {
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            color: var(--primary);
+            margin-bottom: 10px;
         }
         
-        .modal-title i {
+        .keyword {
+            font-weight: 600;
+        }
+        
+        .keyword-cause {
+            color: var(--danger);
+        }
+        
+        .keyword-impact {
             color: var(--primary);
         }
         
-        .modal-body {
-            padding: 20px;
+        .keyword-action {
+            color: var(--success);
         }
         
-        .modal-backdrop.show {
-            opacity: 0.7;
-        }
-        
-        /* 모달 진입/퇴장 애니메이션 */
-        .modal.fade .modal-dialog {
-            transition: transform 0.3s ease-out;
-        }
-        
-        .modal.fade.show .modal-dialog {
-            transform: translate(0, 0);
-        }
-        
-        .modal.fade:not(.show) .modal-dialog {
-            transform: translate(0, -50px);
-        }
-        
-        /* 차트 컨테이너에 Border와 배경 추가 */
-        .chart-container {
-            background-color: #f8f9fa;
+        .report-download {
+            text-align: center;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f0f4ff;
             border-radius: 8px;
-            padding: 10px;
-            border: 1px solid #e9ecef;
         }
         
-        /* 모달 내 테이블 스타일 개선 */
-        .modal-body .table {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .modal-body .table th {
-            background-color: #f8f9fa;
-            font-weight: 500;
-            vertical-align: middle;
-        }
-        
-        .modal-body .table td {
-            vertical-align: middle;
-            padding: 10px;
-        }
-
-        /* AI 자동 장애 보고서 스타일 개선 */
-        #aiReportPanel {
-            margin-bottom: 20px;
+        /* 서버 리스트 스타일 */
+        .server-list {
+            background-color: #fff;
+            border-radius: 12px;
             box-shadow: var(--shadow-md);
-            border-radius: 0.35rem;
+            margin-bottom: 20px;
             overflow: hidden;
+        }
+        
+        .server-filter {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .filter-button {
+            background-color: #f0f2f8;
             border: none;
-            transition: all 0.3s ease;
-        }
-
-        #aiReportPanel:hover {
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-5px);
-        }
-
-        #aiReportPanel .card-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #eaecef;
-            padding: 15px 20px;
-            transition: background-color 0.3s ease;
-        }
-
-        #aiReportPanel:hover .card-header {
-            background-color: #e9ecef;
-        }
-
-        #aiProblemList {
-            max-height: none;
-            overflow-y: visible;
-        }
-
-        .problem-item {
-            position: relative;
-            padding-right: 40px;
-            transition: all 0.3s ease;
-            border-left: 5px solid transparent;
-            overflow: hidden;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
         
-        .problem-item:before {
-            content: '';
+        .filter-button.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            padding: 8px 15px 8px 35px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            width: 250px;
+        }
+        
+        .search-box i {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.03);
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            z-index: 0;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
         }
         
-        .problem-item:hover:before {
-            transform: translateX(0);
+        /* 서버 요약 행 */
+        .server-item {
+            border-bottom: 1px solid var(--border);
         }
         
-        .problem-item:hover {
-            background-color: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
-            border-left-width: 8px;
+        .server-summary {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
         
-        /* 심각도별 색상 */
-        .problem-item.severity-critical {
-            border-left-color: #d32f2f;
+        .server-summary:hover {
+            background-color: #f8f9fc;
         }
         
-        .problem-item.severity-warning, .problem-item.severity-error {
-            border-left-color: #ff8f00;
+        .server-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
-        .problem-item.severity-normal {
-            border-left-color: #4caf50;
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--success);
         }
         
-        /* 문제 설명 스타일 */
-        .problem-description {
+        .status-warning .status-indicator {
+            background-color: var(--warning);
+        }
+        
+        .status-critical .status-indicator {
+            background-color: var(--danger);
+        }
+        
+        .server-name-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .server-name {
             font-weight: 600;
-            color: #2c3e50;
-            position: relative;
-            z-index: 1;
+            font-size: 0.95rem;
         }
         
-        /* 해결책 스타일 */
-        .problem-solution {
-            font-size: 0.85rem;
-            color: #546e7a;
-            position: relative;
-            z-index: 1;
+        .server-ip {
+            font-size: 0.8rem;
+            color: var(--text-muted);
         }
         
-        /* 심각도 텍스트 스타일 */
-        .problem-severity-text {
-            color: #2c3e50;
+        .server-metrics-summary {
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
         
-        .severity-critical .problem-severity-text {
+        .metric-badge {
+            background-color: #f0f2f8;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .metric-badge.critical {
+            background-color: #fdecea;
+        }
+        
+        .metric-badge.warning {
+            background-color: #fff8e1;
+        }
+        
+        .toggle-details {
+            color: var(--primary);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        /* 서버 상세 정보 */
+        .server-details {
+            background-color: #f8f9fc;
+            padding: 0;
+            height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease-out;
+        }
+        
+        .server-details.active {
+            height: auto;
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .details-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .chart-container {
+            height: 200px;
+            margin-top: 10px;
+        }
+        
+        .service-status {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .service-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+        
+        .service-badge.running {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .service-badge.stopped {
+            background-color: #ffebee;
             color: #d32f2f;
         }
         
-        .severity-warning .problem-severity-text, .severity-error .problem-severity-text {
-            color: #ff8f00;
+        .log-list {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 10px;
+            font-size: 0.85rem;
         }
         
-        /* 검색 아이콘 (자세히 보기 힌트) */
-        .problem-hint-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #b0bec5;
-            transition: all 0.3s ease;
-            z-index: 1;
+        .log-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #f0f0f0;
         }
         
-        .problem-item:hover .problem-hint-icon {
-            color: #4e73df;
-            transform: translateY(-50%) scale(1.2);
+        .log-error {
+            color: var(--danger);
         }
         
-        /* 클릭 힌트 툴팁 */
-        .problem-item:hover::after {
-            content: '클릭하여 상세 보고서 보기';
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background-color: rgba(74, 105, 189, 0.9);
-            color: white;
-            padding: 3px 8px;
-            font-size: 0.7rem;
-            border-radius: 4px 0 0 0;
-            z-index: 2;
+        .log-warning {
+            color: var(--warning);
         }
         
-        /* 커서 스타일 */
-        .problem-item {
-            cursor: pointer;
-        }
-
-        /* 리스트 애니메이션 */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* 애니메이션 */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
         
-        .problem-item {
-            animation: fadeInUp 0.5s ease forwards;
-            animation-delay: calc(var(--item-index) * 0.1s);
-            opacity: 0;
+        .pulse-animation {
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
 <body>
-    <div class="loading" id="loadingIndicator">
-        <div class="loading-content">
-            <div class="spinner-border text-primary mb-3" role="status">
-                <span class="visually-hidden">로딩 중...</span>
-            </div>
-            <div>데이터를 가져오는 중입니다...</div>
+    <!-- 로딩 인디케이터 -->
+    <div id="loadingIndicator" class="position-fixed top-0 start-0 end-0 bottom-0 d-flex justify-content-center align-items-center" style="background-color: rgba(255, 255, 255, 0.8); z-index: 1000; display: none;">
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">데이터를 불러오는 중입니다...</p>
         </div>
     </div>
 
-    <header class="header">
-        <div class="logo">
-            <i class="fas fa-server"></i>
-            OpenManager AI
-        </div>
-        <nav class="nav-menu">
-            <a href="index.html" class="nav-item">소개</a>
-            <a href="server_dashboard.html" class="nav-item active">서버 모니터링</a>
-        </nav>
-    </header>
-
-    <div class="container-fluid mt-4">
-        <div class="row mb-4">
-            <div class="col">
-                <h1 class="display-5 mb-0">서버 모니터링 대시보드</h1>
-                <p class="text-muted" id="timestamp">데이터 기준 시각: 로딩 중...</p>
+    <div class="dashboard-container">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-server me-2 text-primary"></i>
+                <h1 class="logo m-0">OpenManager AI</h1>
             </div>
-        </div>
-        
-        <!-- AI 자동 요약 알림 영역 추가 -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div id="statusSummaryAlert" class="alert d-flex align-items-center" role="alert" style="display: none;">
-                    <div class="me-3 status-icon">
-                        <!-- 아이콘은 상태에 따라 JS에서 동적으로 변경됨 -->
+            <div>
+                <button id="demoModeToggle" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-vial me-1"></i> 데모 모드
+                </button>
+                <button class="btn btn-sm btn-outline-secondary ms-2">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- 최근 알림 섹션 -->
+        <section class="alert-section">
+            <h2 class="mb-3 fs-5 fw-bold">
+                <i class="fas fa-bell text-warning me-2"></i>
+                최근 장애 발생 서버
+            </h2>
+            
+            <div class="alert-cards" id="recentAlerts">
+                <!-- 알림 카드 예시 (JavaScript로 동적 생성) -->
+                <div class="alert-card critical" onclick="scrollToServer('server1')">
+                    <div class="d-flex justify-content-between mb-2">
+                        <h3 class="fs-6 fw-bold mb-0">web-server-01</h3>
+                        <span class="badge bg-danger">심각</span>
                     </div>
-                    <div class="status-message">
-                        <!-- 상태 메시지는 JS에서 동적으로 변경됨 -->
+                    <p class="text-muted small mb-2">CPU 사용량 95% 초과 (10분 전)</p>
+                    <div class="text-primary small">클릭하여 자세히 보기</div>
+                </div>
+                
+                <div class="alert-card warning" onclick="scrollToServer('server2')">
+                    <div class="d-flex justify-content-between mb-2">
+                        <h3 class="fs-6 fw-bold mb-0">app-server-03</h3>
+                        <span class="badge bg-warning text-dark">경고</span>
                     </div>
+                    <p class="text-muted small mb-2">메모리 누수 감지 (15분 전)</p>
+                    <div class="text-primary small">클릭하여 자세히 보기</div>
+                </div>
+                
+                <div class="alert-card critical" onclick="scrollToServer('server3')">
+                    <div class="d-flex justify-content-between mb-2">
+                        <h3 class="fs-6 fw-bold mb-0">db-server-02</h3>
+                        <span class="badge bg-danger">심각</span>
+                    </div>
+                    <p class="text-muted small mb-2">MySQL 서비스 중단 (5분 전)</p>
+                    <div class="text-primary small">클릭하여 자세히 보기</div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- AI 질의 영역 (전체 너비) -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="ai-query-container">
-                    <h5 class="mb-3"><i class="fas fa-robot me-2"></i>AI 서버 분석</h5>
-                    <p class="text-muted mb-3">서버 상태나 성능에 대해 자연어로 질문해보세요. (예: "CPU 사용률이 높은 서버는?", "메모리 상태 알려줘")</p>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
-                        <input type="text" class="form-control query-input shadow-sm" id="queryInput" placeholder="자연어로 질문하세요... (Enter 키를 눌러 질문)">
-                        <button class="btn btn-primary ai-query-submit shadow-sm" id="ai-query-submit" type="button">
-                            <i class="fas fa-paper-plane me-1"></i> 질문하기
-                        </button>
-                    </div>
-                    <div class="preset-container mb-3">
-                        <button class="preset-tag example-query-btn" type="button">CPU 사용률이 높은 서버는?</button>
-                        <button class="preset-tag example-query-btn" type="button">최근 장애 상황은?</button>
-                        <button class="preset-tag example-query-btn" type="button">응답 속도가 느린 서버는?</button>
-                    </div>
-                    <div class="query-loading" id="queryLoading" style="display:none;">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">분석 중...</span>
+        <!-- AI 분석 통합 박스 -->
+        <section class="ai-analysis-box">
+            <h2 class="mb-3 fs-5 fw-bold">
+                <i class="fas fa-robot text-primary me-2"></i>
+                AI 서버 분석 도우미
+            </h2>
+            
+            <div class="input-group">
+                <input type="text" id="aiQuery" class="form-control" placeholder="서버 상태에 대해 질문하세요...">
+                <button id="aiQueryBtn" class="btn btn-primary">
+                    <i class="fas fa-search me-1"></i> 분석
+                </button>
+            </div>
+            
+            <div class="query-examples">
+                <button class="query-example">CPU 사용률이 높은 이유는?</button>
+                <button class="query-example">메모리 누수 원인 분석</button>
+                <button class="query-example">서버 장애 대응 방법 제안</button>
+                <button class="query-example">최적의 서버 구성 추천</button>
+            </div>
+            
+            <!-- AI 응답 영역 -->
+            <div id="aiResponse" class="ai-response" style="display: none;">
+                <div class="ai-response-header">AI 분석 결과</div>
+                <div id="aiResponseContent">
+                    <p>분석 결과가 여기에 표시됩니다.</p>
+                </div>
+            </div>
+            
+            <!-- 보고서 다운로드 영역 -->
+            <div id="reportDownload" class="report-download" style="display: none;">
+                <p class="text-muted mb-2">상세 분석 보고서가 자동으로 생성되었습니다</p>
+                <button class="btn btn-success btn-sm">
+                    <i class="fas fa-download me-1"></i> 보고서 다운로드
+                </button>
+            </div>
+        </section>
+
+        <!-- 서버 리스트 섹션 -->
+        <section class="server-list">
+            <div class="server-filter">
+                <div class="filter-buttons">
+                    <button class="filter-button active">전체</button>
+                    <button class="filter-button">정상</button>
+                    <button class="filter-button">경고</button>
+                    <button class="filter-button">심각</button>
+                </div>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="서버 검색...">
+                </div>
+            </div>
+            
+            <div id="serverListContainer">
+                <!-- 서버 1 -->
+                <div class="server-item" id="server1">
+                    <div class="server-summary status-critical">
+                        <div class="server-info">
+                            <div class="status-indicator"></div>
+                            <div class="server-name-section">
+                                <div class="server-name">web-server-01</div>
+                                <div class="server-ip">192.168.1.100</div>
+                            </div>
                         </div>
-                        <p class="mt-2">AI가 서버 데이터를 분석 중입니다...</p>
-                    </div>
-                    <div class="query-result shadow-sm position-relative" id="queryResult" style="display:none;">
-                        <div class="d-flex justify-content-between align-items-center mb-3 close-button-container">
-                            <span class="fw-bold text-primary">AI 분석 결과</span>
-                            <button type="button" id="closeQueryResult" class="btn btn-sm btn-light border rounded-circle">
-                                <i class="fas fa-times"></i>
+                        <div class="server-metrics-summary">
+                            <div class="metric-badge critical d-none d-md-flex">
+                                <i class="fas fa-microchip text-danger"></i> CPU: 95%
+                            </div>
+                            <div class="metric-badge warning d-none d-md-flex">
+                                <i class="fas fa-memory text-warning"></i> MEM: 75%
+                            </div>
+                            <button class="toggle-details btn btn-sm btn-link">
+                                <i class="fas fa-chevron-down"></i>
                             </button>
                         </div>
-                        <div id="queryResultContent"></div>
                     </div>
-                    <div id="queryHistory" class="mt-4">
-                        <!-- 질문/응답 히스토리 -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- AI 자동 장애 보고서 (전체 너비) - 순서 변경 (2번째 위치로) -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="panel card" id="aiReportPanel">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                        <div><i class="fas fa-exclamation-triangle me-2 text-danger"></i> AI 자동 장애 보고서</div>
-                        <button class="btn btn-sm btn-outline-primary" id="downloadAllReportsBtn">
-                            <i class="bi bi-download"></i> 전체 보고서 다운로드
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div class="alert alert-info mb-3">
-                            <i class="fas fa-info-circle me-2"></i>
-                            각 문제 항목을 <strong>클릭</strong>하면 해당 문제의 <strong>상세 보고서</strong>를 확인할 수 있습니다. 
-                            <small class="d-block mt-1">보고서는 .txt 파일로 저장하여 관리할 수 있습니다.</small>
-                        </div>
-                        
-                        <div class="alert alert-info" id="aiProblemsLoading" style="display: none;">
-                            <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
-                                <span class="visually-hidden">로딩 중...</span>
-                            </div>
-                            AI가 문제를 분석 중입니다...
-                        </div>
-
-                        <div id="aiProblemsEmpty" style="display: none;" class="text-center py-4">
-                            <i class="fas fa-check-circle text-success" style="font-size: 2rem;"></i>
-                            <p class="mt-3 mb-0\">현재 감지된 문제가 없습니다.</p>
-                        </div>
-
-                        <ul class="list-group" id="aiProblemList">
-                            <!-- AI 문제 항목들이 여기에 추가됩니다 -->
-                        </ul>
-                        <div class="d-flex justify-content-center mt-3">
-                            <div class="problem-pagination">
-                                <!-- 문제 페이지네이션이 여기에 추가됩니다 -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 서버 그리드와 서버 현황 요약 섹션 -->
-        <div class="row mb-4">
-            <!-- 서버 그리드 (전체 너비) -->
-            <div class="col-12">
-                <div class="card search-container mb-4">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6 mb-3 mb-md-0">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="searchInput" placeholder="호스트명 검색...">
-                                    <button class="btn btn-refresh" type="button" id="refreshBtn">
-                                        <span class="refresh-content">
-                                            <i class="fas fa-sync-alt me-1"></i> 새로고침
-                                        </span>
-                                        <span class="loading-content" style="display:none">
-                                            <span class="spinner-border spinner-border-sm" role="status"></span> 로딩중...
-                                        </span>
-                                    </button>
-                                    <div class="refresh-tooltip">데이터 새로고침 (서버 문제 발생 시 유용)</div>
+                    
+                    <div class="server-details">
+                        <div class="details-grid">
+                            <!-- CPU 차트 -->
+                            <div class="details-card">
+                                <h5 class="fs-6 fw-bold">CPU 사용량</h5>
+                                <div class="chart-container">
+                                    <canvas class="cpu-chart"></canvas>
                                 </div>
-                            </div>
-                            <div class="col-md-3 mb-3 mb-md-0">
-                                <select class="form-select" id="statusFilter">
-                                    <option value="all">모든 상태</option>
-                                    <option value="critical">Critical</option>
-                                    <option value="warning">Warning</option>
-                                    <option value="normal">Normal</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <select class="form-select" id="pageSize">
-                                    <option value="10">10개씩 보기</option>
-                                    <option value="20">20개씩 보기</option>
-                                    <option value="50">50개씩 보기</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 서버 카드 안내 -->
-                <div class="alert alert-info mb-3">
-                    <i class="fas fa-info-circle me-2"></i>
-                    각 서버 카드를 <strong>클릭</strong>하면 해당 서버의 상세 정보를 확인할 수 있습니다.
-                    <small class="d-block mt-1">카드에 마우스를 올리면 추가 정보를 확인할 수 있습니다.</small>
-                </div>
-
-                <!-- 서버 카드 그리드 -->
-                <div class="server-grid" id="serverGrid"></div>
-                
-                <!-- 페이징 -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="text-muted" id="serverCount">전체 0 서버 중 0-0 표시 중</div>
-                    <div class="pagination-container">
-                        <button class="btn btn-sm btn-outline-secondary" id="prevPageBtn">
-                            <i class="fas fa-chevron-left"></i> 이전
-                        </button>
-                        <span class="mx-3" id="currentPage">1 / 1</span>
-                        <button class="btn btn-sm btn-outline-secondary" id="nextPageBtn">
-                            다음 <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 서버 현황 요약 (전체 너비) -->
-        <div class="row">
-            <div class="col-12">
-                <div class="panel card mb-4" id="serverStatusSummaryPanel">
-                    <div class="card-header bg-light">
-                        <div><i class="fas fa-tasks me-2 text-primary"></i> 서버 현황 요약</div>
-                    </div>
-                    <div class="card-body">
-                        <div id="statusSummaryContainer">
-                            <!-- 요약 정보가 여기에 동적으로 채워집니다 (data_processor.js) -->
-                            <p>요약 정보를 불러오는 중...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 서버 상세 정보 모달 -->
-        <div class="modal fade" id="serverDetailModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalServerName">서버 상세 정보</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row mb-4">
-                            <!-- 시스템 정보 -->
-                            <div class="col-md-6">
-                                <h6 class="mb-3">시스템 정보</h6>
-                                <table class="table table-sm">
-                                    <tbody id="systemInfoTable">
-                                        <tr>
-                                            <th>OS</th>
-                                            <td id="modalOS">-</td>
-                                        </tr>
-                                        <tr>
-                                            <th>가동 시간</th>
-                                            <td id="modalUptime">-</td>
-                                        </tr>
-                                        <tr>
-                                            <th>프로세스 수</th>
-                                            <td id="modalProcessCount">-</td>
-                                        </tr>
-                                        <tr>
-                                            <th>좀비 프로세스</th>
-                                            <td id="modalZombieCount">-</td>
-                                        </tr>
-                                        <tr>
-                                            <th>로드 평균 (1분)</th>
-                                            <td id="modalLoadAvg">-</td>
-                                        </tr>
-                                        <tr>
-                                            <th>마지막 업데이트</th>
-                                            <td id="modalLastUpdate">-</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
                             </div>
                             
-                            <!-- 리소스 현황 -->
-                            <div class="col-md-6">
-                                <h6 class="mb-3">리소스 현황</h6>
+                            <!-- 메모리 차트 -->
+                            <div class="details-card">
+                                <h5 class="fs-6 fw-bold">메모리 사용량</h5>
                                 <div class="chart-container">
-                                    <canvas id="resourceBarChart"></canvas>
+                                    <canvas class="memory-chart"></canvas>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="row mb-4">
-                            <!-- 네트워크 정보 -->
-                            <div class="col-md-6">
-                                <h6 class="mb-3">네트워크 정보</h6>
-                                <table class="table table-sm">
-                                    <tbody id="networkInfoTable">
-                                        <tr>
-                                            <th>인터페이스</th>
-                                            <td id="modalNetInterface">-</td>
-                                        </tr>
-                                        <tr>
-                                            <th>수신 바이트</th>
-                                            <td id="modalRxBytes">-</td>
-                                        </tr>
-                                        <tr>
-                                            <th>송신 바이트</th>
-                                            <td id="modalTxBytes">-</td>
-                                        </tr>
-                                        <tr>
-                                            <th>수신 오류</th>
-                                            <td id="modalRxErrors">-</td>
-                                        </tr>
-                                        <tr>
-                                            <th>송신 오류</th>
-                                            <td id="modalTxErrors">-</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            
+                            <!-- 디스크 차트 -->
+                            <div class="details-card">
+                                <h5 class="fs-6 fw-bold">디스크 사용량</h5>
+                                <div class="chart-container">
+                                    <canvas class="disk-chart"></canvas>
+                                </div>
                             </div>
                             
                             <!-- 서비스 상태 -->
-                            <div class="col-md-6">
-                                <h6 class="mb-3">서비스 상태</h6>
-                                <div id="modalServiceStatus" class="service-status-container">
-                                    <!-- 서비스 상태 태그들이 여기에 추가됨 -->
+                            <div class="details-card">
+                                <h5 class="fs-6 fw-bold">서비스 상태</h5>
+                                <div class="service-status">
+                                    <div class="service-badge running">
+                                        nginx <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="service-badge stopped">
+                                        mysql <i class="fas fa-times"></i>
+                                    </div>
+                                    <div class="service-badge running">
+                                        redis <i class="fas fa-check"></i>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- 오류 메시지 -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h6 class="mb-3">오류 메시지</h6>
-                                <div id="modalErrorsContainer" class="alert alert-info">
-                                    현재 보고된 오류가 없습니다.
+                            
+                            <!-- 최근 로그 -->
+                            <div class="details-card">
+                                <h5 class="fs-6 fw-bold">최근 로그</h5>
+                                <div class="log-list">
+                                    <div class="log-item">
+                                        <span class="log-error">[ERROR]</span> MySQL 서비스 연결 실패 (10:32:15)
+                                    </div>
+                                    <div class="log-item">
+                                        <span class="log-warning">[WARN]</span> CPU 사용량 90% 초과 (10:30:05)
+                                    </div>
+                                    <div class="log-item">
+                                        <span>[INFO]</span> 시스템 백업 완료 (09:15:20)
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- 24시간 리소스 사용 추이 -->
-                        <div class="row">
-                            <div class="col-12">
-                                <h6 class="mb-3">24시간 리소스 사용 추이</h6>
-                                <div class="chart-container" style="height: 300px;">
-                                    <canvas id="resourceHistoryChart"></canvas>
+                            
+                            <!-- AI 분석 -->
+                            <div class="details-card">
+                                <h5 class="fs-6 fw-bold">AI 장애 분석</h5>
+                                <div class="mt-2">
+                                    <p><span class="keyword keyword-cause">원인:</span> MySQL 서비스 충돌로 인한 CPU 과부하 발생</p>
+                                    <p><span class="keyword keyword-impact">영향:</span> 웹 애플리케이션 응답 시간 증가, 사용자 경험 저하</p>
+                                    <p><span class="keyword keyword-action">조치 제안:</span> MySQL 서비스 재시작 및 로그 확인 필요. 메모리 할당량 상향 조정 권장</p>
+                                </div>
+                                <div class="text-end mt-3">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-download me-1"></i> 보고서
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                
+                <!-- 서버 2 (다른 서버들도 유사한 구조로 구현) -->
+                <div class="server-item" id="server2">
+                    <!-- 서버 2 내용... -->
+                </div>
+                
+                <!-- 서버 3 -->
+                <div class="server-item" id="server3">
+                    <!-- 서버 3 내용... -->
+                </div>
             </div>
+        </section>
+        
+        <!-- 페이지네이션 -->
+        <div class="d-flex justify-content-center mt-4 mb-5">
+            <nav aria-label="서버 페이지 네비게이션">
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&laquo;</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
-
-    <!-- 필요한 자바스크립트 함수 정의 -->
+    
+    <!-- 자바스크립트 -->
     <script>
-        // 패널 토글 기능 제거
-    </script>
-
-    <!-- 자바스크립트 라이브러리 및 소스 파일 -->
-    <!-- 스크립트는 순서가 중요: 부트스트랩, ai_processor.js, data_processor.js 순서로 로드 -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="ai_processor.js"></script>
-    <script type="module" src="data_processor.js"></script>
-    <!-- Demo Mode 스크립트 추가 -->
-    <script type="module">
-        import demoManager from './demoMode.js';
-        
-        // 페이지 로드 시 데모 모드 처리
-        document.addEventListener('DOMContentLoaded', () => {
-            if (demoManager.isDemoMode) {
-                console.log('데모 모드가 활성화되었습니다.');
-                
-                // 기존 DataProcessor와 연동
-                document.addEventListener('dataProcessorReady', (event) => {
-                    const dataProcessor = event.detail;
-                    if (dataProcessor) {
-                        demoManager.setDataProcessor(dataProcessor);
+        document.addEventListener('DOMContentLoaded', function() {
+            // 서버 토글 기능
+            const toggleButtons = document.querySelectorAll('.toggle-details');
+            toggleButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const serverItem = this.closest('.server-item');
+                    const details = serverItem.querySelector('.server-details');
+                    const icon = this.querySelector('i');
+                    
+                    if (details.classList.contains('active')) {
+                        details.classList.remove('active');
+                        icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                    } else {
+                        details.classList.add('active');
+                        icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
                         
-                        // 기존 데이터 로드 메소드 오버라이드
-                        const originalLoadData = dataProcessor.loadData.bind(dataProcessor);
-                        const originalRefreshData = dataProcessor.refreshData.bind(dataProcessor);
-                        
-                        // 데모 모드에서는 demoManager를 통해 데이터 로드
-                        dataProcessor.loadData = () => {
-                            if (demoManager.isDemoMode) {
-                                // 데모 타이머 시작
-                                demoManager.startDemoTimer();
-                                return;
-                            }
-                            return originalLoadData();
-                        };
-                        
-                        dataProcessor.refreshData = () => {
-                            if (demoManager.isDemoMode) {
-                                // 이미 타이머가 돌고 있으므로 별도 처리 없음
-                                return;
-                            }
-                            return originalRefreshData();
-                        };
-                        
-                        // 데모 모드에서 자동 새로고침 타이머 중지 (demoManager가 처리)
-                        if (dataProcessor.refreshTimer) {
-                            clearInterval(dataProcessor.refreshTimer);
-                            dataProcessor.refreshTimer = null;
+                        // 차트 초기화 (details에 data-initialized 속성이 없을 때만)
+                        if (!details.hasAttribute('data-initialized')) {
+                            initializeCharts(details);
+                            details.setAttribute('data-initialized', 'true');
                         }
                     }
                 });
+            });
+            
+            // 서버 요약 클릭시 상세 정보 토글
+            const serverSummaries = document.querySelectorAll('.server-summary');
+            serverSummaries.forEach(summary => {
+                summary.addEventListener('click', function() {
+                    const toggleBtn = this.querySelector('.toggle-details');
+                    toggleBtn.click();
+                });
+            });
+            
+            // 질문 예시 클릭 기능
+            const queryExamples = document.querySelectorAll('.query-example');
+            queryExamples.forEach(example => {
+                example.addEventListener('click', function() {
+                    document.getElementById('aiQuery').value = this.textContent;
+                });
+            });
+            
+            // AI 질문 처리
+            document.getElementById('aiQueryBtn').addEventListener('click', processAIQuery);
+            document.getElementById('aiQuery').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    processAIQuery();
+                }
+            });
+            
+            // 데모 모드 토글
+            document.getElementById('demoModeToggle').addEventListener('click', function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const isDemoMode = urlParams.get('demo') === 'true';
                 
-                // URL에 demo=true 파라미터가 있음을 알리는 UI 요소 추가
-                const demoNotice = document.createElement('div');
-                demoNotice.className = 'alert alert-primary alert-dismissible fade show';
-                demoNotice.innerHTML = `
-                    <strong>데모 모드</strong>가 활성화되었습니다. 시나리오 기반 가상 데이터를 표시합니다.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                if (isDemoMode) {
+                    window.location.href = window.location.pathname;
+                } else {
+                    window.location.href = window.location.pathname + '?demo=true';
+                }
+            });
+            
+            // 필터 버튼 활성화 토글
+            const filterButtons = document.querySelectorAll('.filter-button');
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    // 여기에 실제 필터링 로직 추가
+                });
+            });
+        });
+        
+        // 서버 섹션으로 스크롤 함수
+        function scrollToServer(serverId) {
+            const element = document.getElementById(serverId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                
+                // 스크롤 후 서버 상세 정보 열기
+                setTimeout(() => {
+                    const details = element.querySelector('.server-details');
+                    const toggleBtn = element.querySelector('.toggle-details');
+                    const icon = toggleBtn.querySelector('i');
+                    
+                    if (!details.classList.contains('active')) {
+                        details.classList.add('active');
+                        icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                        
+                        // 차트 초기화
+                        if (!details.hasAttribute('data-initialized')) {
+                            initializeCharts(details);
+                            details.setAttribute('data-initialized', 'true');
+                        }
+                    }
+                }, 500);
+            }
+        }
+        
+        // AI 질문 처리 함수
+        function processAIQuery() {
+            const query = document.getElementById('aiQuery').value.trim();
+            if (!query) return;
+            
+            const responseDiv = document.getElementById('aiResponse');
+            const responseContent = document.getElementById('aiResponseContent');
+            const reportDownload = document.getElementById('reportDownload');
+            
+            // 로딩 상태 표시
+            responseDiv.style.display = 'block';
+            responseContent.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                    <span>분석 중입니다...</span>
+                </div>
+            `;
+            
+            // 실제로는 서버에 API 요청을 보내지만, 여기서는 예시 응답으로 대체
+            setTimeout(() => {
+                responseContent.innerHTML = `
+                    <p>쿼리: "${query}"에 대한 분석 결과입니다.</p>
+                    
+                    <p><span class="keyword keyword-cause">주요 문제점:</span></p>
+                    <ul>
+                        <li>web-server-01의 MySQL 서비스가 다운되어 있습니다.</li>
+                        <li>app-server-03에서 메모리 누수가 감지되었습니다.</li>
+                    </ul>
+                    
+                    <p><span class="keyword keyword-impact">영향 분석:</span></p>
+                    <p>사용자 로그인 요청 처리 속도가 평균 60% 느려졌으며, 일부 API 요청에 타임아웃이 발생하고 있습니다.</p>
+                    
+                    <p><span class="keyword keyword-action">권장 조치:</span></p>
+                    <ul>
+                        <li>MySQL 서비스 재시작 및 로그 확인</li>
+                        <li>app-server-03의 Java 애플리케이션 힙 메모리 조정</li>
+                        <li>부하 분산을 위한 임시 서버 추가 검토</li>
+                    </ul>
                 `;
                 
-                // 페이지 상단에 알림 추가
-                const container = document.querySelector('.container') || document.body;
-                container.insertBefore(demoNotice, container.firstChild);
+                // 보고서 다운로드 버튼 표시
+                reportDownload.style.display = 'block';
+            }, 2000);
+        }
+        
+        // 차트 초기화 함수
+        function initializeCharts(detailsElement) {
+            // CPU 차트
+            const cpuCanvas = detailsElement.querySelector('.cpu-chart');
+            if (cpuCanvas) {
+                new Chart(cpuCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30'],
+                        datasets: [{
+                            label: 'CPU 사용량 (%)',
+                            data: [45, 52, 60, 75, 82, 90, 95],
+                            backgroundColor: 'rgba(234, 74, 59, 0.2)',
+                            borderColor: 'rgba(234, 74, 59, 1)',
+                            borderWidth: 2,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
             }
-        });
+            
+            // 메모리 차트
+            const memoryCanvas = detailsElement.querySelector('.memory-chart');
+            if (memoryCanvas) {
+                new Chart(memoryCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30'],
+                        datasets: [{
+                            label: '메모리 사용량 (%)',
+                            data: [60, 62, 65, 68, 72, 75, 75],
+                            backgroundColor: 'rgba(246, 194, 62, 0.2)',
+                            borderColor: 'rgba(246, 194, 62, 1)',
+                            borderWidth: 2,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 디스크 차트
+            const diskCanvas = detailsElement.querySelector('.disk-chart');
+            if (diskCanvas) {
+                new Chart(diskCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30'],
+                        datasets: [{
+                            label: '디스크 사용량 (%)',
+                            data: [72, 72, 73, 73, 74, 75, 75],
+                            backgroundColor: 'rgba(28, 200, 138, 0.2)',
+                            borderColor: 'rgba(28, 200, 138, 1)',
+                            borderWidth: 2,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+        }
     </script>
+    
+    <!-- 자바스크립트 라이브러리 및 소스 파일 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="ai_processor.js"></script>
+    <script src="data_processor.js"></script>
 </body>
 </html>  
