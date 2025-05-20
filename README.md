@@ -2,6 +2,11 @@
 
 OpenManager Vibe V4는 자연어 기반 서버 분석 및 모니터링 시스템입니다. 관리자가 쉬운 언어로 서버 상태를 질문하면 시스템이 자동으로 분석하여 결과를 제공합니다.
 
+## 배포 링크
+
+- **프론트엔드**: [https://openvibe3.netlify.app](https://openvibe3.netlify.app)
+- **백엔드 API**: [https://openmanager-vibe-v4.onrender.com](https://openmanager-vibe-v4.onrender.com)
+
 ## 프로젝트 구조
 
 ```
@@ -25,6 +30,20 @@ OpenManager Vibe V4는 자연어 기반 서버 분석 및 모니터링 시스템
     ├── server.js            # 백엔드 서버 코드
     └── package.json         # 백엔드 의존성 정의
 ```
+
+## MCP 연동 흐름
+
+프론트엔드와 MCP Lite 서버는 다음과 같이 연동됩니다:
+
+1. **프론트엔드**: 사용자가 자연어로 서버 상태에 관해 질문 입력
+2. **API 호출**: 프론트엔드가 질문과 컨텍스트 정보를 MCP 서버의 `/query` 엔드포인트로 전송
+3. **백엔드 처리**: MCP 서버가 질문을 컨텍스트 파일과 매칭하여 적절한 응답 생성
+4. **결과 표시**: 응답이 프론트엔드로 전달되어 사용자에게 시각적으로 표시
+
+**시연 환경에서는**:
+- 프론트엔드에서 대부분의 로직이 실행되며 가상 데이터 사용
+- MCP 서버는 보조적인 역할로 단순한 자연어 처리 기능만 제공
+- 실제 환경에서는 MCP 서버가 실제 모니터링 데이터와 고급 LLM을 연동하는 구조로 확장 가능
 
 ## 주요 기능
 
@@ -149,7 +168,7 @@ node server.js
 ## 배포 환경
 
 - **프론트엔드**: Netlify (https://openvibe3.netlify.app)
-- **백엔드**: Render.com
+- **백엔드**: Render.com (https://openmanager-vibe-v4.onrender.com)
 
 ## 향후 개발 계획
 

@@ -1,0 +1,3 @@
+서버 상태 요약:
+- CPU 사용률: server-01 30%, server-02 82%, server-03 47%
+- Disk 사용률: server-01 50%, server-02 95%, server-03 60%
