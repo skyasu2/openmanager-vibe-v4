@@ -7,7 +7,12 @@ const PORT = process.env.PORT || 3000;
 
 // CORS 설정 - 개발 환경과 Netlify 도메인 허용
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://openvibe3.netlify.app'],
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://openvibe3.netlify.app',
+    'https://openmanager-vibe-v4.netlify.app'
+  ],
   credentials: true
 }));
 app.use(bodyParser.json());
