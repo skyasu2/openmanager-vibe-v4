@@ -57,7 +57,7 @@ python -m http.server
 
 ```javascript
 // API 엔드포인트 설정 예시
-const API_URL = "https://openmanager-vibe-v4.onrender.com";
+const API_URL = "https://openmanager-vibe-v4.onrender.com/query";
 ```
 
 ## 데모 사용 시 주의사항

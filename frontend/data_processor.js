@@ -3159,7 +3159,7 @@ class MCPQueryManager {
         this.historyKey = 'mcpQueryHistory';
         this.history = this.loadHistory();
         this.context = null;
-        this.mcpUrl = 'https://mcp-lite-server.onrender.com/query'; // 실제 MCP 서버 주소로 교체
+        this.mcpUrl = 'https://openmanager-vibe-v4.onrender.com/query'; // 실제 MCP 서버 주소로 교체
         this.init();
     }
 
