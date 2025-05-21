@@ -1,0 +1,465 @@
+/* 전역 스타일 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+}
+
+/* 앱 레이아웃 */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.app-content {
+  flex: 1;
+  display: flex;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    flex-direction: column;
+  }
+}
+
+.left-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.app-footer {
+  padding: 1rem 2rem;
+  text-align: center;
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+/* 서버 카드 스타일 */
+.server-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.server-card {
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.server-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.server-card.selected {
+  border: 2px solid var(--primary-color);
+}
+
+.server-name {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.server-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metric {
+  margin-bottom: 0.5rem;
+}
+
+.metric .label {
+  display: inline-block;
+  width: 80px;
+  font-weight: 500;
+}
+
+.metric .value {
+  float: right;
+  font-weight: 600;
+}
+
+.progress-bar {
+  height: 8px;
+  background-color: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 3px;
+}
+
+.progress {
+  height: 100%;
+  background-color: var(--primary-color);
+}
+
+/* 상태별 스타일 */
+.server-card.status-normal .progress {
+  background-color: var(--success-color);
+}
+
+.server-card.status-warning .progress {
+  background-color: var(--warning-color);
+}
+
+.server-card.status-critical .progress {
+  background-color: var(--danger-color);
+}
+
+/* 상태 요약 스타일 */
+.status-summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.summary-item {
+  flex: 1;
+  padding: 1rem;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.summary-item .count {
+  font-size: 2rem;
+  font-weight: bold;
+  display: block;
+}
+
+.summary-item .label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.summary-item.status-normal .count {
+  color: var(--success-color);
+}
+
+.summary-item.status-warning .count {
+  color: var(--warning-color);
+}
+
+.summary-item.status-critical .count {
+  color: var(--danger-color);
+}
+
+/* 필터 버튼 스타일 */
+.filter-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.filter-btn:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.filter-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* 서버 상세 정보 스타일 */
+.server-detail {
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.server-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.server-detail-header h2 {
+  margin: 0;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.detail-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.tab-btn:hover {
+  color: var(--primary-color);
+}
+
+.tab-btn.active {
+  border-bottom-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.tab-content {
+  padding: 1rem 0;
+}
+
+.metrics-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metrics-summary .metric {
+  padding: 1rem;
+  background-color: var(--bg-tertiary);
+  border-radius: 8px;
+}
+
+.metrics-summary .metric h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.metrics-summary .metric-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.metrics-summary .metric-value.normal {
+  color: var(--success-color);
+}
+
+.metrics-summary .metric-value.warning {
+  color: var(--warning-color);
+}
+
+.metrics-summary .metric-value.critical {
+  color: var(--danger-color);
+}
+
+.server-info {
+  background-color: var(--bg-tertiary);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.info-table th, .info-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.info-table th {
+  width: 40%;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* 차트 스타일 */
+.time-range-selector {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.range-btn {
+  padding: 0.5rem 1rem;
+  background-color: var(--bg-tertiary);
+  border: none;
+  cursor: pointer;
+}
+
+.range-btn:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+.range-btn:last-child {
+  border-radius: 0 4px 4px 0;
+}
+
+.range-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* 로그 스타일 */
+.log-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.log-level-filter, .log-search {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.logs-container {
+  background-color: var(--bg-tertiary);
+  border-radius: 8px;
+  padding: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.log-entry {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  font-family: monospace;
+}
+
+.log-time {
+  color: var(--text-secondary);
+  margin-right: 0.5rem;
+}
+
+.log-level {
+  display: inline-block;
+  width: 70px;
+  text-align: center;
+  margin-right: 0.5rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
+}
+
+.log-entry.info .log-level {
+  background-color: var(--status-normal-bg);
+  color: var(--status-normal-text);
+}
+
+.log-entry.warning .log-level {
+  background-color: var(--status-warning-bg);
+  color: var(--status-warning-text);
+}
+
+.log-entry.error .log-level {
+  background-color: var(--status-critical-bg);
+  color: var(--status-critical-text);
+}
+
+/* AI 프로세서 스타일 */
+.ai-processor {
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.ai-input-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.ai-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.ai-submit-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ai-submit-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+.ai-response {
+  padding: 1.5rem;
+  background-color: var(--bg-tertiary);
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.query-suggestions {
+  list-style: none;
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.suggestion-item {
+  padding: 0.5rem 1rem;
+  background-color: var(--bg-tertiary);
+  border-radius: 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.suggestion-item:hover {
+  background-color: var(--primary-color);
+  color: white;
+} 

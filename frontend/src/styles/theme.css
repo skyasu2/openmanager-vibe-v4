@@ -1,0 +1,112 @@
+/* 라이트 모드 (기본) 변수 */
+:root {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --text-muted: #6c757d;
+  --border-color: #dee2e6;
+  --primary-color: #2b6cb0;
+  --primary-hover: #2c5282;
+  --success-color: #38a169;
+  --warning-color: #dd6b20;
+  --danger-color: #e53e3e;
+  --chart-bg: rgba(255, 255, 255, 0.9);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  
+  --status-normal-bg: rgba(56, 161, 105, 0.2);
+  --status-normal-text: #276749;
+  --status-warning-bg: rgba(221, 107, 32, 0.2);
+  --status-warning-text: #9c4221;
+  --status-critical-bg: rgba(229, 62, 62, 0.2);
+  --status-critical-text: #c53030;
+}
+
+/* 다크 모드 변수 */
+[data-theme="dark"] {
+  --bg-primary: #1a202c;
+  --bg-secondary: #2d3748;
+  --bg-tertiary: #4a5568;
+  --text-primary: #f7fafc;
+  --text-secondary: #e2e8f0;
+  --text-muted: #a0aec0;
+  --border-color: #4a5568;
+  --primary-color: #4299e1;
+  --primary-hover: #63b3ed;
+  --success-color: #48bb78;
+  --warning-color: #ed8936;
+  --danger-color: #f56565;
+  --chart-bg: rgba(45, 55, 72, 0.9);
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  
+  --status-normal-bg: rgba(56, 161, 105, 0.3);
+  --status-normal-text: #68d391;
+  --status-warning-bg: rgba(221, 107, 32, 0.3);
+  --status-warning-text: #f6ad55;
+  --status-critical-bg: rgba(229, 62, 62, 0.3);
+  --status-critical-text: #fc8181;
+}
+
+/* 기본 스타일 */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* 컴포넌트 스타일 */
+.card, .server-card, .server-detail {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+.chart-container {
+  background-color: var(--chart-bg);
+}
+
+/* 상태 배지 스타일 */
+.status-badge.normal {
+  background-color: var(--status-normal-bg);
+  color: var(--status-normal-text);
+}
+
+.status-badge.warning {
+  background-color: var(--status-warning-bg);
+  color: var(--status-warning-text);
+}
+
+.status-badge.critical {
+  background-color: var(--status-critical-bg);
+  color: var(--status-critical-text);
+}
+
+/* 테마 전환 버튼 */
+.theme-switch-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  transition: all 0.3s;
+}
+
+.theme-switch-btn:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.theme-switch-btn.dark .sun-icon,
+.theme-switch-btn.light .moon-icon {
+  display: block;
+}
+
+.theme-switch-btn.dark .moon-icon,
+.theme-switch-btn.light .sun-icon {
+  display: none;
+} 

@@ -1,0 +1,243 @@
+/* 공통 페이지 스타일 */
+.dashboard-page,
+.analytics-page,
+.settings-page {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* 대시보드 페이지 스타일 */
+.dashboard-page {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+
+.left-panel {
+  flex: 3;
+}
+
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* 분석 페이지 스타일 */
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.analytics-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.chart-type-selector,
+.time-range-selector {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chart-btn,
+.range-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.chart-btn.active,
+.range-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.overview-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.chart-wrapper {
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.incidents-table,
+.servers-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.incidents-table th,
+.incidents-table td,
+.servers-table th,
+.servers-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.servers-table tr:hover {
+  background-color: var(--bg-hover);
+}
+
+.server-link {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  text-decoration: underline;
+}
+
+.server-link:hover {
+  color: var(--primary-color-dark);
+}
+
+.detail-btn {
+  padding: 0.3rem 0.6rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.3s;
+}
+
+.detail-btn:hover {
+  background-color: var(--primary-color-dark);
+}
+
+.severity {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.severity.warning {
+  background-color: rgba(255, 206, 86, 0.2);
+  color: #f0ad4e;
+}
+
+.severity.critical {
+  background-color: rgba(255, 99, 132, 0.2);
+  color: #d9534f;
+}
+
+.severity.normal {
+  background-color: rgba(82, 196, 26, 0.2);
+  color: #52c41a;
+}
+
+.servers-list {
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.servers-list h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+/* 설정 페이지 스타일 */
+.settings-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.settings-title {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  color: var(--text-primary);
+}
+
+.settings-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settings-section h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.settings-save-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.settings-save-btn:hover {
+  background-color: var(--primary-color-dark);
+}
+
+.settings-saved-message {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: rgba(75, 192, 192, 0.2);
+  color: #4bc0c0;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .dashboard-page {
+    flex-direction: column;
+  }
+  
+  .overview-charts {
+    grid-template-columns: 1fr;
+  }
+  
+  .servers-table {
+    display: block;
+    overflow-x: auto;
+  }
+} 

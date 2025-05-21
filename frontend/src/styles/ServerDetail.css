@@ -1,0 +1,201 @@
+/* 서버 상세 페이지 스타일 */
+.server-detail-page {
+  padding: 2rem;
+}
+
+.server-detail-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  padding: 0.5rem 1rem;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 1rem;
+  transition: all 0.3s;
+}
+
+.back-button:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.server-detail-header h2 {
+  margin: 0;
+  margin-right: 1rem;
+}
+
+.server-status {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-normal {
+  background-color: rgba(82, 196, 26, 0.2);
+  color: #52c41a;
+}
+
+.status-warning {
+  background-color: rgba(250, 173, 20, 0.2);
+  color: #faad14;
+}
+
+.status-critical {
+  background-color: rgba(255, 77, 79, 0.2);
+  color: #ff4d4f;
+}
+
+.server-detail-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.server-info-card,
+.server-metrics-card,
+.server-services-card {
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.server-info-card h3,
+.server-metrics-card h3,
+.server-services-card h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-item .label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.info-item .value {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.metrics-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.metric-item h4 {
+  margin: 0;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.progress-bar {
+  height: 8px;
+  background-color: var(--bg-primary);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.metric-value {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.services-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.service-item {
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: var(--bg-hover);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  color: var(--text-secondary);
+}
+
+.error-message {
+  padding: 1rem;
+  margin: 2rem auto;
+  max-width: 500px;
+  background-color: rgba(255, 77, 79, 0.1);
+  border: 1px solid #ff4d4f;
+  border-radius: 4px;
+  color: #ff4d4f;
+  text-align: center;
+}
+
+.server-not-found {
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 500px;
+  text-align: center;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.server-not-found h2 {
+  margin-top: 0;
+  color: var(--text-primary);
+}
+
+.server-not-found p {
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .server-detail-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .server-detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .server-detail-header h2 {
+    margin: 1rem 0;
+  }
+} 
