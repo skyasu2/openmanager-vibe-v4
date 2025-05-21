@@ -34,31 +34,51 @@ const StatusSummary = ({ servers = [] }) => {
   
   return (
     <div className="status-summary">
-      <h2>서버 상태 요약</h2>
-      <div className="summary-cards">
-        <div className="summary-card total">
-          <div className="card-title">전체 서버</div>
-          <div className="card-value">{summary.total}</div>
+      <h2 className="text-lg font-semibold text-gray-800 mb-3">서버 상태 요약</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+          <div className="text-sm text-gray-600 font-medium">전체 서버</div>
+          <div className="text-2xl font-bold text-gray-800 mt-1">{summary.total}</div>
         </div>
         
-        <div className="summary-card normal">
-          <div className="card-title">정상</div>
-          <div className="card-value">{summary.normal}</div>
-          <div className="card-percent">{summary.percentNormal}%</div>
+        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+          <div className="text-sm text-gray-600 font-medium">정상</div>
+          <div className="text-2xl font-bold text-gray-800 mt-1">{summary.normal}</div>
+          <div className="text-sm text-green-600 font-medium">{summary.percentNormal}%</div>
         </div>
         
-        <div className="summary-card warning">
-          <div className="card-title">경고</div>
-          <div className="card-value">{summary.warning}</div>
-          <div className="card-percent">{summary.percentWarning}%</div>
+        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
+          <div className="text-sm text-gray-600 font-medium">경고</div>
+          <div className="text-2xl font-bold text-gray-800 mt-1">{summary.warning}</div>
+          <div className="text-sm text-yellow-600 font-medium">{summary.percentWarning}%</div>
         </div>
         
-        <div className="summary-card critical">
-          <div className="card-title">심각</div>
-          <div className="card-value">{summary.critical}</div>
-          <div className="card-percent">{summary.percentCritical}%</div>
+        <div className="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
+          <div className="text-sm text-gray-600 font-medium">심각</div>
+          <div className="text-2xl font-bold text-gray-800 mt-1">{summary.critical}</div>
+          <div className="text-sm text-red-600 font-medium">{summary.percentCritical}%</div>
         </div>
       </div>
+      
+      {/* 상태 프로그레스 바 */}
+      {summary.total > 0 && (
+        <div className="mt-4 h-2 rounded-full bg-gray-200 overflow-hidden">
+          <div className="flex h-full">
+            <div 
+              className="bg-green-500 h-full" 
+              style={{ width: `${summary.percentNormal}%` }}
+            ></div>
+            <div 
+              className="bg-yellow-500 h-full" 
+              style={{ width: `${summary.percentWarning}%` }}
+            ></div>
+            <div 
+              className="bg-red-500 h-full" 
+              style={{ width: `${summary.percentCritical}%` }}
+            ></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -110,12 +110,21 @@ const Dashboard = () => {
   
   // Display loading indicator
   if (loading && servers.length === 0) {
-    return <div className="loading">Loading server data...</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
   
   // Display error message
   if (error && servers.length === 0) {
-    return <div className="error">{error}</div>;
+    return (
+      <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md">
+        <p className="font-bold">오류</p>
+        <p>{error}</p>
+      </div>
+    );
   }
   
   return (
@@ -124,35 +133,51 @@ const Dashboard = () => {
       <StatusSummary servers={servers} />
       
       {/* Filter buttons */}
-      <div className="filter-buttons">
+      <div className="filter-buttons flex flex-wrap space-x-2 my-4">
         <button 
-          className={`filter-btn ${filterStatus === 'all' ? 'active' : ''}`}
+          className={`px-3 py-1 rounded-full text-sm font-medium ${
+            filterStatus === 'all' 
+              ? 'bg-blue-500 text-white' 
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
           onClick={() => changeFilterStatus('all')}
         >
-          All
+          전체
         </button>
         <button 
-          className={`filter-btn ${filterStatus === 'normal' ? 'active' : ''}`}
+          className={`px-3 py-1 rounded-full text-sm font-medium ${
+            filterStatus === 'normal' 
+              ? 'bg-green-500 text-white' 
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
           onClick={() => changeFilterStatus('normal')}
         >
-          Normal
+          정상
         </button>
         <button 
-          className={`filter-btn ${filterStatus === 'warning' ? 'active' : ''}`}
+          className={`px-3 py-1 rounded-full text-sm font-medium ${
+            filterStatus === 'warning' 
+              ? 'bg-yellow-500 text-white' 
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
           onClick={() => changeFilterStatus('warning')}
         >
-          Warning
+          경고
         </button>
         <button 
-          className={`filter-btn ${filterStatus === 'critical' ? 'active' : ''}`}
+          className={`px-3 py-1 rounded-full text-sm font-medium ${
+            filterStatus === 'critical' 
+              ? 'bg-red-500 text-white' 
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
           onClick={() => changeFilterStatus('critical')}
         >
-          Critical
+          심각
         </button>
       </div>
       
       {/* Server list */}
-      <div className="server-list">
+      <div className="server-list grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
         {getFilteredServers().map(server => (
           <ServerCard 
             key={server.id}
@@ -163,11 +188,14 @@ const Dashboard = () => {
         ))}
       </div>
       
-      {/* Server detail section - shown when server is selected */}
-      {selectedServer && (
-        <div className="server-details">
-          <h2>{selectedServer.hostname}</h2>
-          {/* More detail content would go here */}
+      {/* Empty state when no servers match filter */}
+      {getFilteredServers().length === 0 && (
+        <div className="text-center py-12 bg-gray-50 rounded-lg mt-4">
+          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">일치하는 서버가 없습니다</h3>
+          <p className="mt-1 text-sm text-gray-500">다른 필터를 선택하여 서버를 확인하세요.</p>
         </div>
       )}
     </div>
