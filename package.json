@@ -20,11 +20,5 @@
     "analytics"
   ],
   "author": "",
-  "license": "UNLICENSED",
-  "devDependencies": {
-    "supabase": "^2.23.4"
-  }
-}
-"scripts": {
-  "supabase": "supabase"
+  "license": "UNLICENSED"
 }

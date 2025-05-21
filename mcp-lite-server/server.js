@@ -6,7 +6,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const k8sDataGenerator = require('./utils/k8sDataGenerator');
 const aiAgent = require('./ai_agent');
-const supabase = require('./supabaseClient');
 const demoScenarioManager = require('./demoScenarioManager');
 
 // 라우터 가져오기
