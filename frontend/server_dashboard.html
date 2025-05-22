@@ -1470,9 +1470,7 @@
             dataProcessor: false
         };
     </script>
-    <script type="module" src="dummy_data_generator.js" onerror="window.loadStatus.dummyGenerator = false" onload="window.loadStatus.dummyGenerator = true"></script>
-    <script type="module" src="ai_processor.js" onerror="window.loadStatus.aiProcessor = false" onload="window.loadStatus.aiProcessor = true"></script>
-    <script type="module" src="data_processor.js" onerror="window.loadStatus.dataProcessor = false" onload="window.loadStatus.dataProcessor = true"></script>
+    <!-- React 앱 내부에서 이미 모듈이 import되고 있으므로 script 태그 제거 -->
     
     <!-- 스크립트 로드 오류 처리 -->
     <script>
@@ -1507,9 +1505,10 @@
                 
                 // 어떤 스크립트가 누락되었는지 확인
                 const missingScripts = [];
-                if (!window.loadStatus.dummyGenerator) missingScripts.push('dummy_data_generator.js');
-                if (!window.loadStatus.aiProcessor) missingScripts.push('ai_processor.js');
-                if (!window.loadStatus.dataProcessor) missingScripts.push('data_processor.js');
+                            // React 앱에서는 모듈 로딩 방식이 변경되었으므로 이 검사가 필요없음
+            // if (!window.loadStatus.dummyGenerator) missingScripts.push('dummy_data_generator.js');
+            // if (!window.loadStatus.aiProcessor) missingScripts.push('ai_processor.js');
+            // if (!window.loadStatus.dataProcessor) missingScripts.push('data_processor.js');
                 
                 if (missingScripts.length > 0) {
                     console.warn(`다음 스크립트가 로드되지 않았습니다: ${missingScripts.join(', ')}`);
