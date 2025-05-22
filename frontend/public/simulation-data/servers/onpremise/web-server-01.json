@@ -1,0 +1,18 @@
+{
+  "id": "web-server-01",
+  "name": "Web Server 01",
+  "type": "web-server",
+  "environment": "production",
+  "region": "seoul-west",
+  "specs": {
+    "cpu": "4 cores",
+    "memory": "16GB",
+    "storage": "250GB SSD",
+    "network": "1Gbps"
+  },
+  "services": ["nginx", "php-fpm", "redis-client"],
+  "monitoring": {
+    "metrics": ["cpu_usage", "memory_usage", "disk_usage", "request_count", "response_time"],
+    "alerts": ["high_load", "slow_response", "connection_limit", "ssl_cert_expiry"]
+  }
+} 

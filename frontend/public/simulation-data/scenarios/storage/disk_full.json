@@ -1,0 +1,30 @@
+{
+  "scenario_id": "storage_disk_full",
+  "name": "디스크 용량 부족",
+  "description": "로그 파일 급증으로 인한 디스크 용량 임계점 도달",
+  "severity": "critical",
+  "duration_minutes": 120,
+  "affected_metrics": {
+    "disk_usage": "increase_to_95%",
+    "write_operations": "decrease_by_80%",
+    "application_errors": "increase_by_1000%"
+  },
+  "symptoms": [
+    "애플리케이션 쓰기 실패",
+    "로그 기록 중단",
+    "데이터베이스 트랜잭션 실패"
+  ],
+  "possible_causes": [
+    "로그 순환 설정 오류",
+    "임시 파일 정리 실패",
+    "디스크 공간 모니터링 부재",
+    "급격한 데이터 증가"
+  ],
+  "recommended_actions": [
+    "불필요한 로그 파일 정리",
+    "디스크 공간 증설",
+    "로그 순환 정책 재설정",
+    "로그 압축 설정",
+    "불필요한 파일 식별 및 제거"
+  ]
+} 

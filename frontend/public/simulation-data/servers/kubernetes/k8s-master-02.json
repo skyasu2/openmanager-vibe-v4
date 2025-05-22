@@ -1,0 +1,18 @@
+{
+  "id": "k8s-master-02",
+  "name": "Kubernetes Master Node 02",
+  "type": "kubernetes-master",
+  "environment": "production",
+  "region": "seoul-west",
+  "specs": {
+    "cpu": "8 cores",
+    "memory": "32GB",
+    "storage": "500GB SSD",
+    "network": "10Gbps"
+  },
+  "services": ["kube-apiserver", "kube-scheduler", "kube-controller-manager"],
+  "monitoring": {
+    "metrics": ["cpu_usage", "memory_usage", "disk_usage", "network_io", "pod_count"],
+    "alerts": ["high_cpu", "memory_leak", "disk_full", "api_latency"]
+  }
+} 

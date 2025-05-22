@@ -1,0 +1,18 @@
+{
+  "id": "db-server-01",
+  "name": "Database Server 01",
+  "type": "db-server",
+  "environment": "production",
+  "region": "seoul-east",
+  "specs": {
+    "cpu": "8 cores",
+    "memory": "64GB",
+    "storage": "2TB SSD",
+    "network": "10Gbps"
+  },
+  "services": ["mysql", "postgresql", "backup-service"],
+  "monitoring": {
+    "metrics": ["cpu_usage", "memory_usage", "disk_usage", "query_count", "slow_queries", "connection_count", "replication_lag"],
+    "alerts": ["high_cpu", "slow_queries", "replication_broken", "backup_failure", "disk_full"]
+  }
+} 

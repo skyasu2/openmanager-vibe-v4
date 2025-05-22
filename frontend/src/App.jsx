@@ -12,6 +12,7 @@ import UnauthorizedPage from './pages/UnauthorizedPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AppProvider, useAppContext } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
+import AutoReportDashboard from './components/AutoReportDashboard';
 import './styles/App.css';
 import './styles/theme.css';
 import './styles/Navigation.css';
@@ -56,6 +57,23 @@ const AnimatedRoutes = () => {
                 <main className="app-content">
                   <PageTransition keyValue={location.pathname}>
                     <DashboardPage />
+                  </PageTransition>
+                </main>
+                <footer className="app-footer">
+                  <p>OpenManager Vibe V4 &copy; 2025</p>
+                </footer>
+              </>
+            </ProtectedRoute>
+          } />
+          
+          {/* 자동 보고서 대시보드 라우트 */}
+          <Route path="/auto-reports" element={
+            <ProtectedRoute>
+              <>
+                <Navigation />
+                <main className="app-content">
+                  <PageTransition keyValue={location.pathname}>
+                    <AutoReportDashboard />
                   </PageTransition>
                 </main>
                 <footer className="app-footer">

@@ -1,0 +1,41 @@
+2025-05-22T00:01:05Z [INFO] nginx: Starting nginx web server v1.20.1
+2025-05-22T00:01:07Z [INFO] php-fpm: PHP-FPM started successfully with 20 worker processes
+2025-05-22T00:05:12Z [INFO] nginx: Accepted connection from 192.168.1.101
+2025-05-22T00:10:33Z [INFO] nginx: 192.168.1.101 - - [22/May/2025:00:10:33 +0000] "GET /api/v1/products HTTP/1.1" 200 1536 "-" "Mozilla/5.0"
+2025-05-22T00:15:47Z [INFO] php-fpm: Accepted FastCGI request from nginx
+2025-05-22T01:01:22Z [INFO] nginx: 192.168.1.105 - - [22/May/2025:01:01:22 +0000] "POST /api/v1/users/login HTTP/1.1" 200 256 "-" "PostmanRuntime/7.28.4"
+2025-05-22T01:17:33Z [WARNING] php-fpm: Slow request detected: /api/v1/products/search (5.2s)
+2025-05-22T02:03:45Z [INFO] nginx: 192.168.1.110 - - [22/May/2025:02:03:45 +0000] "GET /static/images/banner.jpg HTTP/1.1" 200 352145 "https://example.com/" "Mozilla/5.0"
+2025-05-22T02:17:38Z [INFO] nginx: TLS handshake successful with 192.168.1.111
+2025-05-22T03:01:15Z [INFO] nginx: 404 Not Found: /favicon.ico
+2025-05-22T03:15:12Z [WARNING] nginx: 10 consecutive failed login attempts from 203.0.113.42
+2025-05-22T04:05:33Z [ERROR] php-fpm: PHP Fatal error: Uncaught PDOException: SQLSTATE[HY000] [2002] Connection refused in /var/www/html/models/Database.php:67
+2025-05-22T04:10:47Z [ERROR] php-fpm: Failed to connect to Redis at redis-server-01:6379: Connection refused
+2025-05-22T04:15:22Z [ERROR] php-fpm: Redis connection error: Connection refused
+2025-05-22T04:20:15Z [ERROR] php-fpm: Database connection error: Could not connect to database server
+2025-05-22T04:25:33Z [WARNING] php-fpm: Slow request detected: /api/v1/checkout (10.5s)
+2025-05-22T04:30:18Z [WARNING] nginx: High number of active connections: 1024/1024
+2025-05-22T04:35:27Z [ERROR] nginx: 503 Service Temporarily Unavailable: /api/v1/orders
+2025-05-22T04:40:12Z [ERROR] php-fpm: Maximum execution time of 30 seconds exceeded in /var/www/html/controllers/OrderController.php:156
+2025-05-22T04:45:38Z [INFO] php-fpm: Connection to Redis server re-established
+2025-05-22T04:50:22Z [INFO] php-fpm: Database connection restored
+2025-05-22T05:01:17Z [INFO] nginx: 192.168.1.120 - - [22/May/2025:05:01:17 +0000] "GET /api/v1/products HTTP/1.1" 200 1536 "-" "Mozilla/5.0"
+2025-05-22T06:15:33Z [INFO] nginx: Rotating access and error logs
+2025-05-22T07:30:41Z [INFO] php-fpm: Recycling worker processes
+2025-05-22T08:05:17Z [INFO] nginx: SSL certificate for example.com has been renewed
+2025-05-22T09:10:33Z [INFO] nginx: 192.168.1.125 - - [22/May/2025:09:10:33 +0000] "GET /api/v1/products/featured HTTP/1.1" 200 4567 "-" "Mozilla/5.0"
+2025-05-22T10:15:27Z [WARNING] nginx: Client 192.168.1.130 sent too large request body (4MB), client: 192.168.1.130
+2025-05-22T11:01:15Z [INFO] nginx: 192.168.1.135 - - [22/May/2025:11:01:15 +0000] "POST /api/v1/orders HTTP/1.1" 201 156 "-" "PostmanRuntime/7.28.4"
+2025-05-22T12:17:22Z [WARNING] php-fpm: High memory usage in worker pool: 75%
+2025-05-22T13:05:33Z [INFO] nginx: 192.168.1.140 - - [22/May/2025:13:05:33 +0000] "GET /api/v1/categories HTTP/1.1" 200 879 "-" "Mozilla/5.0"
+2025-05-22T14:10:47Z [INFO] php-fpm: Starting session garbage collection
+2025-05-22T15:15:22Z [INFO] nginx: 192.168.1.145 - - [22/May/2025:15:15:22 +0000] "POST /api/v1/users/register HTTP/1.1" 201 123 "-" "Mozilla/5.0"
+2025-05-22T16:01:15Z [WARNING] php-fpm: Slow request detected: /api/v1/products/recommendations (7.3s)
+2025-05-22T17:05:33Z [INFO] nginx: 192.168.1.150 - - [22/May/2025:17:05:33 +0000] "GET /api/v1/cart HTTP/1.1" 200 456 "-" "Mozilla/5.0"
+2025-05-22T18:10:47Z [INFO] nginx: 192.168.1.155 - - [22/May/2025:18:10:47 +0000] "PUT /api/v1/cart/items/123 HTTP/1.1" 200 178 "-" "Mozilla/5.0"
+2025-05-22T19:15:22Z [INFO] php-fpm: Cleared expired sessions: 1256 removed
+2025-05-22T20:01:15Z [INFO] nginx: 192.168.1.160 - - [22/May/2025:20:01:15 +0000] "GET /api/v1/products/deals HTTP/1.1" 200 2345 "-" "Mozilla/5.0"
+2025-05-22T21:05:33Z [INFO] nginx: 192.168.1.165 - - [22/May/2025:21:05:33 +0000] "POST /api/v1/checkout HTTP/1.1" 201 345 "-" "Mozilla/5.0"
+2025-05-22T22:10:47Z [INFO] php-fpm: Recycling worker processes
+2025-05-22T23:15:22Z [INFO] nginx: Starting daily log rotation
+2025-05-22T23:45:15Z [INFO] nginx: Successfully rotated logs 

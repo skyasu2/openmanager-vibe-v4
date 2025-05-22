@@ -1,0 +1,18 @@
+{
+  "id": "redis-server-01",
+  "name": "Redis Server 01",
+  "type": "redis-server",
+  "environment": "production",
+  "region": "seoul-east",
+  "specs": {
+    "cpu": "4 cores",
+    "memory": "32GB",
+    "storage": "500GB SSD",
+    "network": "10Gbps"
+  },
+  "services": ["redis", "redis-sentinel", "redis-exporter"],
+  "monitoring": {
+    "metrics": ["cpu_usage", "memory_usage", "disk_usage", "connected_clients", "evicted_keys", "rejected_connections"],
+    "alerts": ["memory_full", "high_latency", "sentinel_down", "replication_broken"]
+  }
+} 

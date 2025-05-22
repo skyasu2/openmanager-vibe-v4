@@ -21,6 +21,15 @@ const Navigation = () => {
         </NavLink>
         
         <NavLink 
+          to="/auto-reports" 
+          className={({ isActive }) => 
+            isActive ? 'nav-link active' : 'nav-link'
+          }
+        >
+          AI 자동 보고서
+        </NavLink>
+        
+        <NavLink 
           to="/analytics" 
           className={({ isActive }) => 
             isActive ? 'nav-link active' : 'nav-link'

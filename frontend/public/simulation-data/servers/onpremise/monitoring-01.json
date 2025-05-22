@@ -1,0 +1,18 @@
+{
+  "id": "monitoring-01",
+  "name": "Monitoring Server 01",
+  "type": "monitoring",
+  "environment": "production",
+  "region": "seoul-west",
+  "specs": {
+    "cpu": "8 cores",
+    "memory": "32GB",
+    "storage": "1TB SSD",
+    "network": "10Gbps"
+  },
+  "services": ["prometheus", "grafana", "alertmanager", "node-exporter"],
+  "monitoring": {
+    "metrics": ["cpu_usage", "memory_usage", "disk_usage", "alert_count", "scrape_duration", "target_count"],
+    "alerts": ["high_cpu", "disk_full", "scrape_failures", "config_reload_failure"]
+  }
+} 

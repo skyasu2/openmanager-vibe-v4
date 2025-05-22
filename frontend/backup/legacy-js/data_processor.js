@@ -3,7 +3,7 @@
  * 서버 데이터 처리, 페이지네이션, 필터링 및 UI 업데이트 로직을 구현합니다.
  */
 
-import { AIProcessor, processQuery } from './ai_processor.js';
+import { AIProcessor } from './ai_processor.js';
 import { CONFIG } from './config.js';
 
 class DataProcessor {
@@ -395,7 +395,7 @@ class DataProcessor {
                     load_avg_15m: (Math.random() * 3).toFixed(2),
                     process_count: Math.floor(Math.random() * 200) + 50,
                     zombie_count: Math.floor(Math.random() * 3),
-                    timestamp: new Date().toISOString(),
+                timestamp: new Date().toISOString(),
                     net: {
                         interface: 'eth0',
                         rx_bytes: Math.floor(Math.random() * 1000000),
@@ -507,7 +507,7 @@ class DataProcessor {
                     badgeElement.className = 'badge bg-warning';
                     badgeElement.textContent = '경고';
                 }
-            } else {
+        } else {
                 memoryPresetTag.classList.add('tag-normal');
                 if (badgeElement) {
                     badgeElement.className = 'badge bg-success';
@@ -631,7 +631,7 @@ class DataProcessor {
                     this.resetRefreshButton(refreshBtn);
                 }, 3000);
                 
-                return;
+            return;
             } catch (e) {
                 console.error('데이터 새로고침 중 오류:', e);
                 // 오류 발생 시 원래 데이터로 UI 복원
@@ -1197,8 +1197,8 @@ class DataProcessor {
                             <ul class="mb-0">
                                 ${server.errors.map(error => `<li>${error}</li>`).join('')}
                             </ul>
-                        </div>
-                    `;
+                    </div>
+                `;
                 } else {
                     modalErrorsContainer.innerHTML = '<div class="alert alert-info">현재 보고된 오류가 없습니다.</div>';
                 }
@@ -1468,9 +1468,9 @@ class DataProcessor {
         
             if (problems.length === 0) {
                 emptyIndicator.style.display = 'block';
-                return;
-            }
-
+            return;
+        }
+        
             // 전체 문제 데이터 저장
             this.problemsData = problems;
             
@@ -1756,19 +1756,19 @@ class DataProcessor {
                 } else {
                     message = `<strong>긴급 주의 필요:</strong> ${criticalCount}개 서버가 심각한 상태입니다. 즉시 확인이 필요합니다.`;
                 }
-                break;
-                
-            case 'warning':
+                    break;
+                    
+                case 'warning':
                 alertClass = 'alert-warning';
                 iconHTML = '<i class="fas fa-exclamation-triangle fa-2x"></i>';
                 
                 if (warningCount === 1) {
                     message = `<strong>주의:</strong> 1개 서버에 경고 상태가 감지되었습니다. 상태를 확인해 주세요.`;
-                } else {
+                    } else {
                     message = `<strong>주의:</strong> ${warningCount}개 서버에 경고 상태가 감지되었습니다. 상태를 확인해 주세요.`;
-                }
-                break;
-                
+                    }
+                    break;
+                    
             default: // normal
                 alertClass = 'alert-success';
                 iconHTML = '<i class="fas fa-check-circle fa-2x"></i>';
@@ -1882,7 +1882,7 @@ CPU 사용률이 높은 서버가 ${highCpuServers.length}대 발견되었습니
                         response += `   - 권장 조치: ${problem.solution || '서버 부하 원인 확인 필요'}\n\n`;
                     }
                 });
-            } else {
+                    } else {
                 response += `1. **높은 CPU 사용률 원인**: 서버에서 리소스를 많이 사용하는 프로세스가 실행 중이거나, 동시에 많은 요청이 처리되고 있을 수 있습니다.\n`;
                 response += `   - 권장 조치: 'top' 명령어로 CPU를 많이 사용하는 프로세스를 확인하고, 불필요한 프로세스 종료나 부하 분산을 고려하세요.\n\n`;
                 response += `2. **성능 병목 현상**: CPU 사용률이 지속적으로 높은 경우 성능 병목 현상이 발생할 수 있습니다.\n`;
@@ -1963,7 +1963,7 @@ CPU 사용률이 높은 서버가 ${highCpuServers.length}대 발견되었습니
                         response += `   - 권장 조치: ${problem.solution || '메모리 누수 또는 과다 사용 프로세스 확인 필요'}\n\n`;
                     }
                 });
-            } else {
+                    } else {
                 response += `1. **높은 메모리 사용률 원인**: 서버에서 메모리 누수가 있거나, 메모리를 많이 사용하는 애플리케이션이 실행 중일 수 있습니다.\n`;
                 response += `   - 권장 조치: 'free -m', 'top' 명령어로 메모리를 많이 사용하는 프로세스를 확인하고, 필요시 재시작하세요.\n\n`;
                 response += `2. **스왑 사용 확인**: 메모리 부족 시 스왑 사용량이 증가할 수 있습니다.\n`;
@@ -2638,7 +2638,7 @@ CPU 사용률이 높은 서버가 ${highCpuServers.length}대 발견되었습니
                     const server = this.serverData.find(s => s.hostname === serverHostname);
                     if (server) {
                         $modal.modal('hide');
-                        setTimeout(() => {
+        setTimeout(() => {
                             this.showServerDetail(server);
                         }, 500);
                     }
@@ -3216,7 +3216,11 @@ class MCPQueryManager {
         resultBox.classList.remove('active');
         resultBox.style.display = 'none';
         try {
-            const answer = await processQuery(query);
+            // processQuery 대신 aiProcessor 인스턴스를 통해 호출
+            const answer = window.aiProcessor ? 
+                await window.aiProcessor.processQuery(query) : 
+                "AI 처리 컴포넌트를 찾을 수 없습니다.";
+                
             if (!answer || answer === 'undefined' || answer.trim() === '') {
                 result.innerHTML = '적절한 답변을 찾지 못했습니다.';
             } else {

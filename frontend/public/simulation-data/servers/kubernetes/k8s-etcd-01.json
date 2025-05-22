@@ -1,0 +1,18 @@
+{
+  "id": "k8s-etcd-01",
+  "name": "Kubernetes ETCD Node 01",
+  "type": "kubernetes-etcd",
+  "environment": "production",
+  "region": "seoul-east",
+  "specs": {
+    "cpu": "4 cores",
+    "memory": "16GB",
+    "storage": "300GB SSD",
+    "network": "10Gbps"
+  },
+  "services": ["etcd", "etcd-backup"],
+  "monitoring": {
+    "metrics": ["cpu_usage", "memory_usage", "disk_usage", "network_io", "etcd_latency", "key_count"],
+    "alerts": ["high_latency", "leader_change", "disk_full", "backup_failure", "quorum_lost"]
+  }
+} 

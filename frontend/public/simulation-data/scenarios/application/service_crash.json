@@ -1,0 +1,31 @@
+{
+  "scenario_id": "application_service_crash",
+  "name": "핵심 서비스 크래시",
+  "description": "애플리케이션 핵심 서비스가 예기치 않게 중단되는 현상",
+  "severity": "critical",
+  "duration_minutes": 30,
+  "affected_metrics": {
+    "service_availability": "decrease_to_0%",
+    "error_rate": "increase_to_100%",
+    "system_cpu": "spike_to_100%"
+  },
+  "symptoms": [
+    "서비스 응답 없음",
+    "HTTP 500 오류 급증",
+    "연결된 서비스 장애 전파",
+    "시스템 로그에 치명적 오류 기록"
+  ],
+  "possible_causes": [
+    "처리할 수 없는 입력값 수신",
+    "자원 고갈(메모리/CPU)",
+    "버그 트리거 조건 발생",
+    "의존성 서비스 실패"
+  ],
+  "recommended_actions": [
+    "서비스 즉시 재시작",
+    "장애 발생 직전 로그 분석",
+    "코어 덤프 분석",
+    "최근 배포 변경사항 확인",
+    "롤백 고려"
+  ]
+} 

@@ -1,0 +1,31 @@
+{
+  "scenario_id": "application_memory_leak",
+  "name": "애플리케이션 메모리 누수",
+  "description": "시간이 지날수록 애플리케이션이 메모리를 점진적으로 소모하는 현상",
+  "severity": "critical",
+  "duration_minutes": 240,
+  "affected_metrics": {
+    "memory_usage": "increase_linear_to_95%",
+    "application_response_time": "increase_by_500%",
+    "error_rate": "increase_by_300%"
+  },
+  "symptoms": [
+    "메모리 사용량 지속적 증가",
+    "애플리케이션 응답 시간 증가",
+    "OOM(Out Of Memory) 오류 발생",
+    "주기적인 애플리케이션 크래시"
+  ],
+  "possible_causes": [
+    "애플리케이션 코드 내 메모리 누수",
+    "캐시 제한 설정 오류",
+    "외부 라이브러리 결함",
+    "가비지 컬렉션 설정 오류"
+  ],
+  "recommended_actions": [
+    "애플리케이션 재시작",
+    "힙 덤프 분석",
+    "메모리 프로파일링 실행",
+    "의심되는 코드 경로 검토",
+    "최근 코드 변경사항 확인"
+  ]
+} 

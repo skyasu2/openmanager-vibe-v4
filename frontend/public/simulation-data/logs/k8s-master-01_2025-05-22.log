@@ -1,0 +1,45 @@
+2025-05-22T00:01:23Z [INFO] kube-apiserver: API server started successfully on port 6443
+2025-05-22T00:02:17Z [INFO] kube-scheduler: Successfully assigned default/nginx-deployment-7d9b9c7c7-z6mxq to k8s-worker-03
+2025-05-22T00:05:45Z [INFO] kube-controller-manager: ReplicaSet nginx-deployment-7d9b9c7c7 created successfully
+2025-05-22T00:10:12Z [INFO] kube-apiserver: Authentication succeeded for user admin
+2025-05-22T00:15:33Z [INFO] kube-scheduler: Successfully assigned monitoring/prometheus-5466c467c-k2jft to k8s-worker-01
+2025-05-22T01:05:12Z [INFO] kube-apiserver: Health check passed
+2025-05-22T01:17:22Z [INFO] kube-controller-manager: Deployment database/postgres scaled from 3 to 5 replicas
+2025-05-22T01:32:45Z [INFO] kube-apiserver: Node k8s-worker-02 registered successfully
+2025-05-22T02:05:08Z [WARNING] kube-scheduler: Failed to schedule pod monitoring/grafana-78cc749764-2xprq: insufficient memory
+2025-05-22T02:17:33Z [INFO] kube-apiserver: Deleted pod database/postgres-backup-job-2zjfk
+2025-05-22T03:01:23Z [ERROR] kube-controller-manager: Node k8s-worker-08 not ready, pods may be rescheduled
+2025-05-22T03:15:18Z [WARNING] kube-apiserver: Etcd latency increased to 250ms for key operations
+2025-05-22T03:32:41Z [INFO] kube-scheduler: Successfully assigned default/nginx-deployment-7d9b9c7c7-x3jl2 to k8s-worker-05
+2025-05-22T04:17:52Z [WARNING] kube-controller-manager: ReplicaSet database/mysql-backup failed to reach desired replica count
+2025-05-22T05:02:23Z [INFO] kube-apiserver: Certificate rotation completed successfully
+2025-05-22T06:15:41Z [INFO] kube-scheduler: Node k8s-worker-03 cordoned for maintenance
+2025-05-22T07:30:18Z [WARNING] kube-apiserver: Too many API calls from IP 192.168.1.25, rate limiting applied
+2025-05-22T08:15:23Z [INFO] kube-apiserver: Successfully authenticated user admin
+2025-05-22T08:16:41Z [WARNING] kube-scheduler: Pod scheduling failed: insufficient resources
+2025-05-22T08:17:55Z [ERROR] kube-controller-manager: Node k8s-worker-05 not responding
+2025-05-22T08:18:12Z [CRITICAL] etcd: Cluster leader election failed
+2025-05-22T08:19:33Z [INFO] kube-apiserver: Health check passed
+2025-05-22T08:25:47Z [CRITICAL] kube-apiserver: Unable to connect to etcd cluster
+2025-05-22T08:26:03Z [CRITICAL] kube-controller-manager: Controller manager lost connection to API server
+2025-05-22T08:27:18Z [ERROR] kube-scheduler: Pod scheduling operations suspended
+2025-05-22T08:35:22Z [INFO] etcd: Recovered from split-brain, cluster restored
+2025-05-22T08:36:14Z [INFO] kube-apiserver: Connection to etcd cluster restored
+2025-05-22T08:37:05Z [INFO] kube-controller-manager: Connection to API server restored
+2025-05-22T08:38:22Z [INFO] kube-scheduler: Pod scheduling operations resumed
+2025-05-22T09:01:45Z [INFO] kube-apiserver: Updated cluster RBAC policy
+2025-05-22T10:12:33Z [INFO] kube-scheduler: Successfully assigned ingress/nginx-ingress-controller-5fbb49c56-lm9n7 to k8s-worker-01
+2025-05-22T11:05:17Z [INFO] kube-controller-manager: Horizontal Pod Autoscaler scaled deployment web/frontend from 5 to 8 replicas
+2025-05-22T12:10:22Z [WARNING] kube-apiserver: Namespace default approaching resource quota limits
+2025-05-22T13:15:48Z [INFO] kube-scheduler: Successfully assigned database/postgres-9c56c467c-k8jht to k8s-worker-07
+2025-05-22T14:05:39Z [INFO] kube-apiserver: Certificate signing request approved for user developer1
+2025-05-22T15:10:22Z [INFO] kube-controller-manager: Horizontal Pod Autoscaler scaled deployment web/frontend from 8 to 10 replicas
+2025-05-22T16:07:33Z [WARNING] kube-scheduler: Node k8s-worker-02 reached memory pressure condition
+2025-05-22T17:01:17Z [INFO] kube-apiserver: Namespace monitoring resource quota increased
+2025-05-22T18:15:48Z [INFO] kube-controller-manager: Horizontal Pod Autoscaler scaled deployment web/frontend from 10 to 7 replicas
+2025-05-22T19:05:39Z [INFO] kube-scheduler: Node k8s-worker-03 uncordoned and available for scheduling
+2025-05-22T20:10:22Z [INFO] kube-apiserver: User developer2 created with edit role in namespace web
+2025-05-22T21:07:33Z [INFO] kube-controller-manager: DaemonSet monitoring/node-exporter updated successfully
+2025-05-22T22:01:17Z [INFO] kube-scheduler: Successfully assigned web/frontend-blue-green-deployment-789c6467c-9kfd5 to k8s-worker-09
+2025-05-22T23:15:48Z [INFO] kube-apiserver: Daily system backup initiated
+2025-05-22T23:45:39Z [INFO] kube-controller-manager: Daily system backup completed successfully 

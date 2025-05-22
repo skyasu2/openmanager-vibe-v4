@@ -1,0 +1,29 @@
+{
+  "scenario_id": "network_packet_loss",
+  "name": "패킷 손실 장애",
+  "description": "네트워크 패킷 손실로 인한 연결 불안정",
+  "severity": "warning",
+  "duration_minutes": 45,
+  "affected_metrics": {
+    "network_latency": "increase_by_300%",
+    "packet_loss": "set_to_5%",
+    "connection_errors": "increase_by_500%"
+  },
+  "symptoms": [
+    "API 응답 시간 증가",
+    "간헐적 연결 실패",
+    "사용자 불만 증가"
+  ],
+  "possible_causes": [
+    "네트워크 장비 결함",
+    "네트워크 혼잡",
+    "라우팅 테이블 오류",
+    "방화벽 설정 문제"
+  ],
+  "recommended_actions": [
+    "네트워크 장비 상태 확인",
+    "네트워크 트래픽 분석",
+    "방화벽 로그 확인",
+    "네트워크 모니터링 대시보드 검토"
+  ]
+} 

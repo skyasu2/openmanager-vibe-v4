@@ -1,0 +1,18 @@
+{
+  "id": "k8s-worker-01",
+  "name": "Kubernetes Worker Node 01",
+  "type": "kubernetes-worker",
+  "environment": "production",
+  "region": "seoul-east",
+  "specs": {
+    "cpu": "16 cores",
+    "memory": "64GB",
+    "storage": "1TB SSD",
+    "network": "10Gbps"
+  },
+  "services": ["kubelet", "kube-proxy", "container-runtime", "node-problem-detector"],
+  "monitoring": {
+    "metrics": ["cpu_usage", "memory_usage", "disk_usage", "network_io", "pod_count", "container_count"],
+    "alerts": ["high_cpu", "memory_leak", "disk_full", "node_not_ready", "pod_crash_loop"]
+  }
+} 
