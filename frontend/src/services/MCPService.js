@@ -4,6 +4,7 @@ import { ProductionAnalyzer } from './ProductionAnalyzer.js';
 import { MONITORING_CONFIG } from '../config/monitoring.config.js';
 import { TimelineAnalyzer } from './TimelineAnalyzer.js';
 import { AutoReportGenerator } from './AutoReportGenerator.js';
+import { OperationalKnowledgeBase } from './OperationalKnowledgeBase.js';
 
 // MCP 서버 URL 설정
 const MCP_URL = process.env.REACT_APP_MCP_URL || 'https://mcp-server.onrender.com';
@@ -20,6 +21,7 @@ export class MCPService {
     this.conversationHistory = [];
     this.alertSuppression = new Map();
     this.timelineAnalyzer = new TimelineAnalyzer();
+    this.knowledgeBase = new OperationalKnowledgeBase();
   }
 
   /**
@@ -31,37 +33,303 @@ export class MCPService {
     const startTime = Date.now();
     
     try {
-      // 질의 의도 분류
-      const queryContext = this.analyzeQuery(query);
+      const queryType = this.classifyQuery(query);
+      const context = this.buildQueryContext(query);
       
-      // 시간순 분석 질의 감지
-      if (query.includes("시간순") || query.includes("언제") || query.includes("순서") || 
-          query.includes("1시간") || query.includes("타임라인") || query.includes("장애 발생")) {
-        const result = await this.processTimelineAnalysis(query);
-        result.processing_time = Date.now() - startTime;
-        result.query_id = this.generateQueryId();
-        this.logQuery(query, result);
-        return result;
-      }
+      // 모든 질의는 24시간 통합 분석 기반으로 처리
+      const unifiedAnalysis = await this.performUnifiedAnalysis(query);
       
-      // 기존 로직 유지
-      switch (queryContext.intent) {
-        case 'server_health_check':
-          return await this.handleHealthQuery(queryContext);
-        case 'anomaly_investigation':
-          return await this.handleAnomalyQuery(queryContext);
-        case 'performance_analysis':
-          return await this.handlePerformanceQuery(queryContext);
-        case 'troubleshooting_guide':
-          return await this.handleTroubleshootingQuery(queryContext);
-        case 'capacity_planning':
-          return await this.handleCapacityQuery(queryContext);
+      switch (queryType) {
+        case 'timeline_analysis':
+          return this.generateTimelineResponse(unifiedAnalysis, query);
+        case 'operational_guide':
+          return this.generateOperationalGuideResponse(unifiedAnalysis, query);
+        case 'troubleshooting':
+          return this.generateTroubleshootingResponse(unifiedAnalysis, query);
+        case 'system_status':
+          return this.generateSystemStatusResponse(unifiedAnalysis, query);
         default:
-          return await this.handleGeneralQuery(queryContext);
+          return this.generateGeneralResponse(unifiedAnalysis, query);
       }
     } catch (error) {
       return this.handleQueryError(error, query);
     }
+  }
+
+  // 질의 분류 개선 (통합 처리)
+  classifyQuery(query) {
+    const patterns = {
+      timeline_analysis: ["시간순", "언제", "순서", "타임라인", "24시간", "하루", "무슨 일"],
+      operational_guide: ["명령어", "로그", "확인", "방법", "어떻게", "명령", "커맨드"],
+      troubleshooting: ["해결", "고치", "문제", "장애", "복구", "조치"],
+      system_status: ["상태", "현재", "정상", "문제", "헬스"]
+    };
+
+    for (const [type, keywords] of Object.entries(patterns)) {
+      if (keywords.some(keyword => query.includes(keyword))) {
+        return type;
+      }
+    }
+
+    return 'general';
+  }
+
+  // 쿼리 컨텍스트 구성
+  buildQueryContext(query) {
+    return {
+      query,
+      intent: this.queryProcessor.extractIntent(query),
+      servers: this.queryProcessor.extractServerReferences(query),
+      timeRange: this.queryProcessor.extractTimeRange(query) || '24h',
+      metrics: this.queryProcessor.extractMetrics(query),
+      urgency: this.queryProcessor.assessUrgency(query)
+    };
+  }
+
+  // 통합 분석 엔진 (자동보고서와 질문답변 공통 로직)
+  async performUnifiedAnalysis(query = null, timeRange = '24h') {
+    // 24시간 기준 분석
+    const endTime = new Date();
+    const startTime = new Date(endTime.getTime() - 24 * 60 * 60 * 1000);
+
+    // TimelineAnalyzer로 통합 분석
+    const analysis = await this.timelineAnalyzer.analyzeIncidentTimeline(startTime, endTime);
+    
+    // 지식베이스 기반 운영 가이드 추가
+    if (analysis.why_happened) {
+      analysis.operational_guidance = await this.generateOperationalGuidance(analysis);
+    }
+
+    return analysis;
+  }
+
+  // 운영 가이드 생성
+  async generateOperationalGuidance(analysis) {
+    const guidance = {
+      current_status: '',
+      command_suggestions: [],
+      troubleshooting_steps: [],
+      escalation_points: []
+    };
+
+    // 현재 상태 요약
+    if (analysis.normal_period && analysis.incident_start) {
+      guidance.current_status = 
+        `${analysis.normal_period.end.toLocaleString()}까지 정상 → ` +
+        `${analysis.incident_start.toLocaleString()}부터 이상 징후 시작`;
+    } else if (!analysis.incident_start) {
+      guidance.current_status = "지난 24시간 동안 시스템 정상 운영";
+    }
+
+    // 문제 유형별 명령어 제안
+    if (analysis.what_happened && analysis.what_happened.length > 0) {
+      const problemTypes = analysis.what_happened.flatMap(incident => 
+        incident.primary_symptoms.map(symptom => symptom.type)
+      );
+      
+      problemTypes.forEach(problemType => {
+        const commands = this.knowledgeBase.getRelevantCommands(problemType);
+        guidance.command_suggestions.push(...commands);
+      });
+    }
+
+    return guidance;
+  }
+
+  // 6하원칙 기반 응답 생성
+  generateTimelineResponse(analysis, originalQuery) {
+    let response = `📊 **24시간 시스템 분석 결과**\n\n`;
+
+    // 언제까지 정상이었는지
+    if (analysis.normal_period) {
+      response += `✅ **정상 구간**: ${analysis.normal_period.start.toLocaleString()} ~ ${analysis.normal_period.end.toLocaleString()}`;
+      if (analysis.normal_period.duration) {
+        response += ` (${analysis.normal_period.duration})`;
+      }
+      response += `\n\n`;
+    }
+
+    // 언제부터 문제인지
+    if (analysis.incident_start) {
+      response += `⚠️ **문제 시작**: ${analysis.incident_start.toLocaleString()}\n\n`;
+    }
+
+    // 무엇이 발생했는지
+    if (analysis.what_happened && analysis.what_happened.length > 0) {
+      response += `🔍 **발생한 문제들**:\n`;
+      analysis.what_happened.forEach((incident, index) => {
+        response += `${index + 1}. **${incident.timeframe}** (${incident.duration})\n`;
+        incident.primary_symptoms.forEach(symptom => {
+          response += `   • ${symptom.description}\n`;
+        });
+      });
+      response += `\n`;
+    }
+
+    // 어디서 발생했는지
+    if (analysis.where_occurred && analysis.where_occurred.affected_systems && analysis.where_occurred.affected_systems.length > 0) {
+      response += `📍 **영향받은 시스템**: `;
+      response += analysis.where_occurred.affected_systems.map(sys => sys.type).join(', ');
+      response += `\n\n`;
+    }
+
+    // 왜 발생했는지
+    if (analysis.why_happened && analysis.why_happened.underlying_cause) {
+      response += `🎯 **근본 원인**: ${analysis.why_happened.underlying_cause.technical_explanation}\n`;
+      response += `신뢰도: ${(analysis.why_happened.hypothesis_confidence * 100).toFixed(0)}%\n\n`;
+    }
+
+    // 어떻게 대응할지
+    if (analysis.how_to_respond) {
+      response += `🛠️ **대응 방안**:\n`;
+      if (analysis.how_to_respond.immediate_actions && analysis.how_to_respond.immediate_actions.length > 0) {
+        response += `**즉시 조치**:\n`;
+        analysis.how_to_respond.immediate_actions.forEach(action => {
+          response += `• ${action}\n`;
+        });
+      }
+    }
+
+    return {
+      type: 'timeline_analysis',
+      response,
+      analysis,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  // 운영 가이드 응답 생성
+  generateOperationalGuideResponse(analysis, query) {
+    let response = `🔧 **운영 가이드**\n\n`;
+
+    // 현재 상태
+    if (analysis.operational_guidance) {
+      response += `📊 **현재 상태**: ${analysis.operational_guidance.current_status}\n\n`;
+      
+      // 추천 명령어
+      if (analysis.operational_guidance.command_suggestions && analysis.operational_guidance.command_suggestions.length > 0) {
+        response += `💻 **추천 명령어**:\n`;
+        analysis.operational_guidance.command_suggestions.forEach(cmdGroup => {
+          response += `**${cmdGroup.category}**:\n`;
+          cmdGroup.commands.slice(0, 2).forEach(cmd => { // 상위 2개만
+            response += `• \`${cmd.cmd}\` - ${cmd.description}\n`;
+          });
+        });
+        response += `\n`;
+      }
+    }
+
+    return {
+      type: 'operational_guide',
+      response,
+      analysis,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  // 트러블슈팅 응답 생성
+  generateTroubleshootingResponse(analysis, query) {
+    let response = `🔍 **트러블슈팅 가이드**\n\n`;
+
+    // 문제 파악
+    if (analysis.why_happened && analysis.why_happened.immediate_cause) {
+      response += `🔎 **진단된 문제**: ${analysis.why_happened.immediate_cause.explanation}\n\n`;
+    }
+
+    // 해결 단계
+    if (analysis.why_happened && analysis.why_happened.underlying_cause && analysis.why_happened.underlying_cause.recommendation) {
+      const recommendationType = analysis.why_happened.underlying_cause.recommendation;
+      response += `🛠️ **권장 해결 단계**:\n`;
+      
+      if (recommendationType === 'resource_scaling') {
+        response += `1. 리소스 사용량 모니터링 강화\n`;
+        response += `2. 부하 분산 검토\n`;
+        response += `3. 시스템 자원 스케일업 또는 스케일아웃 고려\n`;
+      } else if (recommendationType === 'network_optimization') {
+        response += `1. 네트워크 장비 상태 점검\n`;
+        response += `2. 대역폭 사용량 확인\n`;
+        response += `3. 네트워크 연결 재구성 검토\n`;
+      } else if (recommendationType === 'application_stability') {
+        response += `1. 애플리케이션 로그 분석\n`;
+        response += `2. 문제 프로세스 재시작\n`;
+        response += `3. 최신 패치 적용 검토\n`;
+      }
+    }
+
+    // 특정 명령어 추천
+    if (analysis.operational_guidance && analysis.operational_guidance.command_suggestions && analysis.operational_guidance.command_suggestions.length > 0) {
+      response += `\n💻 **문제 진단 명령어**:\n`;
+      const firstGroup = analysis.operational_guidance.command_suggestions[0];
+      firstGroup.commands.forEach(cmd => {
+        response += `• \`${cmd.cmd}\` - ${cmd.when_to_use}\n`;
+      });
+    }
+
+    return {
+      type: 'troubleshooting',
+      response,
+      analysis,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  // 시스템 상태 응답 생성
+  generateSystemStatusResponse(analysis, query) {
+    let response = `🖥️ **시스템 현재 상태**\n\n`;
+
+    if (analysis.incident_start) {
+      response += `⚠️ **주의**: ${analysis.incident_start.toLocaleString()}부터 이상 징후가 감지되었습니다.\n\n`;
+    } else {
+      response += `✅ **정상**: 지난 24시간 동안 시스템이 정상 운영 중입니다.\n\n`;
+    }
+
+    if (analysis.where_occurred && analysis.where_occurred.affected_systems) {
+      const affectedSystems = analysis.where_occurred.affected_systems;
+      if (affectedSystems.length > 0) {
+        response += `📊 **영향받은 시스템 현황**:\n`;
+        affectedSystems.forEach(system => {
+          response += `• ${system.type} (${system.servers.length}대): ${this.getCriticalityLabel(system.criticality)}\n`;
+        });
+      } else {
+        response += `📊 **모든 시스템 정상 운영 중**\n`;
+      }
+    }
+
+    return {
+      type: 'system_status',
+      response,
+      analysis,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  // 일반 응답 생성
+  generateGeneralResponse(analysis, query) {
+    let response = ``;
+
+    if (analysis.incident_start) {
+      response += `지난 24시간 동안 ${analysis.incident_start.toLocaleString()}부터 시스템 이상이 감지되었습니다.`;
+    } else {
+      response += `지난 24시간 동안 시스템은 정상 운영되었습니다.`;
+    }
+
+    return {
+      type: 'general',
+      response,
+      analysis,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  // 유틸리티 메서드
+  getCriticalityLabel(criticality) {
+    const labels = {
+      'critical': '⚠️ 심각',
+      'high': '🔴 높음',
+      'medium': '🟠 중간',
+      'low': '🟢 낮음'
+    };
+    return labels[criticality] || '정보 없음';
   }
 
   // 서버 헬스 체크 질의 처리
@@ -269,7 +537,7 @@ export class MCPService {
     return {
       type: 'general_response',
       system_overview: systemOverview,
-      response: this.generateGeneralResponse(context.query, systemOverview),
+      response: this.generateGeneralResponse(systemOverview, context.query),
       suggested_queries: this.suggestFollowUpQueries(context.query, systemOverview)
     };
   }

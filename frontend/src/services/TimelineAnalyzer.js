@@ -3,41 +3,282 @@ export class TimelineAnalyzer {
     this.eventCorrelator = new EventCorrelator();
     this.causalChainDetector = new CausalChainDetector();
     this.reportGenerator = new AutoReportGenerator();
+    this.knowledgeBase = new OperationalKnowledgeBase();
   }
 
-  // 핵심 기능: 1시간 동안의 모든 이벤트를 시간순으로 분석
-  async analyzeIncidentTimeline(startTime, endTime) {
+  // 24시간 기준으로 변경
+  async analyzeIncidentTimeline(startTime = null, endTime = null) {
+    // 기본값: 지난 24시간
+    if (!startTime || !endTime) {
+      endTime = new Date();
+      startTime = new Date(endTime.getTime() - 24 * 60 * 60 * 1000); // 24시간 전
+    }
+
     const analysis = {
       timeline_period: { start: startTime, end: endTime },
-      incident_summary: null,
-      causal_chain: [],
-      affected_systems: [],
+      normal_period: null,        // 언제까지 정상이었는지
+      incident_start: null,       // 언제부터 문제인지
+      what_happened: [],          // 무엇이 발생했는지
+      where_occurred: [],         // 어디서 발생했는지  
+      why_happened: null,         // 왜 발생했는지 (근본원인)
+      how_to_respond: [],         // 어떻게 대응할지
       business_impact: null,
-      root_cause_analysis: null,
       lessons_learned: [],
-      prevention_recommendations: []
+      prevention_recommendations: [],
+      causal_chain: []            // 기존 호환성 유지
     };
 
-    // 1. 모든 서버의 시간대별 데이터 수집
+    // 1. 24시간 동안의 모든 서버 데이터 수집
     const timeSeriesData = await this.collectTimeSeriesData(startTime, endTime);
     
-    // 2. 이벤트 시간순 정렬 및 상관관계 분석
-    const chronologicalEvents = this.buildChronologicalEventMap(timeSeriesData);
+    // 2. 정상/비정상 구간 식별
+    const { normalPeriod, incidentPeriods } = this.identifyNormalAndIncidentPeriods(timeSeriesData);
+    analysis.normal_period = normalPeriod;
+    analysis.incident_start = incidentPeriods.length > 0 ? incidentPeriods[0].start : null;
     
-    // 3. 인과관계 체인 탐지 (AI의 핵심 가치)
+    // 3. 기존 로직 호환성 유지
+    const chronologicalEvents = this.buildChronologicalEventMap(timeSeriesData);
     analysis.causal_chain = await this.detectCausalChain(chronologicalEvents);
     
-    // 4. 비즈니스 영향도 계산
+    // 4. 6하원칙 기반 분석
+    analysis.what_happened = await this.analyzeWhatHappened(timeSeriesData, incidentPeriods);
+    analysis.where_occurred = this.analyzeWhereOccurred(analysis.what_happened);
+    analysis.why_happened = await this.analyzeWhyHappened(analysis.what_happened);
+    analysis.how_to_respond = await this.generateResponsePlan(analysis);
+    
+    // 5. 기존 로직 호환성 유지
     analysis.business_impact = this.calculateBusinessImpact(analysis.causal_chain);
     
-    // 5. 근본 원인 추론
-    analysis.root_cause_analysis = await this.performRootCauseInference(analysis.causal_chain);
-    
-    // 6. 학습된 교훈 및 예방책 생성
-    analysis.lessons_learned = this.generateLessonsLearned(analysis);
-    analysis.prevention_recommendations = this.generatePreventionPlan(analysis);
-
     return analysis;
+  }
+
+  // 정상/비정상 구간 식별 (새로운 핵심 기능)
+  identifyNormalAndIncidentPeriods(timeSeriesData) {
+    const periods = {
+      normalPeriod: { start: null, end: null },
+      incidentPeriods: []
+    };
+
+    // 시간순으로 이상 징후 탐지
+    const anomalies = [];
+    for (const [serverId, metrics] of Object.entries(timeSeriesData)) {
+      metrics.forEach(dataPoint => {
+        const serverAnomalies = this.detectAnomaliesInDataPoint(dataPoint, serverId);
+        anomalies.push(...serverAnomalies.map(a => ({...a, timestamp: dataPoint.timestamp, server_id: serverId})));
+      });
+    }
+
+    // 시간순 정렬
+    anomalies.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    if (anomalies.length === 0) {
+      // 24시간 내내 정상
+      periods.normalPeriod = {
+        start: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        end: new Date(),
+        status: "완전 정상"
+      };
+    } else {
+      // 첫 번째 이상 징후 전까지가 정상 구간
+      periods.normalPeriod = {
+        start: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        end: new Date(anomalies[0].timestamp),
+        duration: this.calculateDuration(new Date(Date.now() - 24 * 60 * 60 * 1000), new Date(anomalies[0].timestamp))
+      };
+
+      // 이상 징후 구간들 식별
+      let currentIncident = {
+        start: new Date(anomalies[0].timestamp),
+        end: null,
+        events: []
+      };
+
+      anomalies.forEach((anomaly, index) => {
+        currentIncident.events.push(anomaly);
+        
+        // 다음 이상 징후와 30분 이상 차이나면 별개 사건으로 처리
+        if (index < anomalies.length - 1) {
+          const timeDiff = new Date(anomalies[index + 1].timestamp) - new Date(anomaly.timestamp);
+          if (timeDiff > 30 * 60 * 1000) { // 30분
+            currentIncident.end = new Date(anomaly.timestamp);
+            periods.incidentPeriods.push(currentIncident);
+            currentIncident = {
+              start: new Date(anomalies[index + 1].timestamp),
+              end: null,
+              events: []
+            };
+          }
+        } else {
+          // 마지막 이상 징후
+          currentIncident.end = new Date();
+        }
+      });
+
+      if (currentIncident.events.length > 0) {
+        periods.incidentPeriods.push(currentIncident);
+      }
+    }
+
+    return periods;
+  }
+
+  // What: 무엇이 발생했는지 분석
+  async analyzeWhatHappened(timeSeriesData, incidentPeriods) {
+    const whatHappened = [];
+
+    incidentPeriods.forEach(period => {
+      const periodAnalysis = {
+        timeframe: `${new Date(period.start).toLocaleString()} ~ ${new Date(period.end).toLocaleString()}`,
+        duration: this.calculateDuration(period.start, period.end),
+        primary_symptoms: [],
+        secondary_effects: [],
+        affected_metrics: [],
+        severity_level: 'unknown'
+      };
+
+      // 주요 증상 식별
+      const symptomsByType = {};
+      period.events.forEach(event => {
+        if (!symptomsByType[event.type]) {
+          symptomsByType[event.type] = [];
+        }
+        symptomsByType[event.type].push(event);
+      });
+
+      // 주요 증상 정리
+      for (const [type, events] of Object.entries(symptomsByType)) {
+        const servers = [...new Set(events.map(e => e.server_id))];
+        periodAnalysis.primary_symptoms.push({
+          type: this.translateEventType(type),
+          affected_servers: servers,
+          count: events.length,
+          description: this.generateSymptomDescription(type, servers, events)
+        });
+      }
+
+      // 심각도 계산
+      const criticalEvents = period.events.filter(e => e.severity === 'critical');
+      if (criticalEvents.length >= 3) {
+        periodAnalysis.severity_level = 'critical';
+      } else if (criticalEvents.length >= 1) {
+        periodAnalysis.severity_level = 'warning';
+      } else {
+        periodAnalysis.severity_level = 'info';
+      }
+
+      whatHappened.push(periodAnalysis);
+    });
+
+    return whatHappened;
+  }
+
+  // Where: 어디서 발생했는지 분석
+  analyzeWhereOccurred(whatHappened) {
+    const locations = {
+      affected_systems: [],
+      impact_zones: [],
+      propagation_path: []
+    };
+
+    whatHappened.forEach(incident => {
+      incident.primary_symptoms.forEach(symptom => {
+        // 영향받은 시스템 분류
+        symptom.affected_servers.forEach(server => {
+          const systemType = this.classifySystemType(server);
+          if (!locations.affected_systems.find(s => s.type === systemType)) {
+            locations.affected_systems.push({
+              type: systemType,
+              servers: [server],
+              criticality: this.getSystemCriticality(systemType)
+            });
+          } else {
+            const existing = locations.affected_systems.find(s => s.type === systemType);
+            if (!existing.servers.includes(server)) {
+              existing.servers.push(server);
+            }
+          }
+        });
+      });
+    });
+
+    // 전파 경로 분석
+    locations.propagation_path = this.analyzePropagationPath(whatHappened);
+
+    return locations;
+  }
+
+  // Why: 왜 발생했는지 근본원인 분석
+  async analyzeWhyHappened(whatHappened) {
+    const rootCauseAnalysis = {
+      immediate_cause: null,      // 직접적 원인
+      underlying_cause: null,     // 근본적 원인  
+      contributing_factors: [],   // 기여 요인들
+      hypothesis_confidence: 0,   // 가설 신뢰도
+      evidence_strength: 'low'    // 증거 강도
+    };
+
+    if (whatHappened.length === 0) {
+      return {
+        conclusion: "분석 기간 동안 특별한 이상 징후가 발견되지 않았습니다.",
+        system_health: "excellent"
+      };
+    }
+
+    // 가장 초기 증상부터 분석
+    const earliestIncident = whatHappened[0];
+    const firstSymptom = earliestIncident.primary_symptoms[0];
+
+    // 직접적 원인 추론
+    rootCauseAnalysis.immediate_cause = this.inferImmediateCause(firstSymptom);
+    
+    // 근본적 원인 추론 (지식베이스 활용)
+    rootCauseAnalysis.underlying_cause = await this.knowledgeBase.inferRootCause(
+      firstSymptom, 
+      earliestIncident,
+      whatHappened
+    );
+
+    // 기여 요인들 식별
+    rootCauseAnalysis.contributing_factors = this.identifyContributingFactors(whatHappened);
+
+    // 신뢰도 계산
+    rootCauseAnalysis.hypothesis_confidence = this.calculateHypothesisConfidence(rootCauseAnalysis);
+
+    return rootCauseAnalysis;
+  }
+
+  // How: 어떻게 대응할지 계획 생성
+  async generateResponsePlan(analysis) {
+    const responsePlan = {
+      immediate_actions: [],      // 즉시 조치 (0-30분)
+      short_term_actions: [],     // 단기 조치 (1-24시간)  
+      medium_term_actions: [],    // 중기 조치 (1-7일)
+      long_term_prevention: [],   // 장기 예방 (1개월+)
+      monitoring_enhancement: [], // 모니터링 강화
+      escalation_criteria: [],    // 에스컬레이션 기준
+      rollback_procedures: []     // 롤백 절차
+    };
+
+    // 지식베이스에서 대응 방안 조회
+    if (analysis.why_happened && analysis.why_happened.underlying_cause) {
+      const kbResponse = await this.knowledgeBase.getResponseProcedures(
+        analysis.why_happened.underlying_cause,
+        analysis.what_happened,
+        analysis.where_occurred
+      );
+      
+      responsePlan.immediate_actions = kbResponse.immediate || [];
+      responsePlan.short_term_actions = kbResponse.short_term || [];
+      responsePlan.medium_term_actions = kbResponse.medium_term || [];
+      responsePlan.long_term_prevention = kbResponse.prevention || [];
+    }
+
+    // 기본 대응 방안 (지식베이스에 없는 경우)
+    if (responsePlan.immediate_actions.length === 0) {
+      responsePlan.immediate_actions = this.generateDefaultImmediateActions(analysis);
+    }
+
+    return responsePlan;
   }
 
   // 시간순 이벤트 맵 구축 (AI의 핵심 로직)
@@ -162,29 +403,6 @@ export class TimelineAnalyzer {
       metrics: impactMetrics,
       estimated_revenue_impact: this.estimateRevenueImpact(totalImpact),
       user_impact_assessment: this.assessUserImpact(impactMetrics)
-    };
-  }
-
-  // 근본 원인 추론 (고급 AI 기능)
-  async performRootCauseInference(causalChain) {
-    if (causalChain.length === 0) {
-      return { conclusion: '분석 기간 동안 특별한 이상 징후가 발견되지 않았습니다.' };
-    }
-
-    // 가장 초기 이벤트부터 역추적
-    const initialEvent = causalChain[0].trigger_event;
-    const propagationPattern = this.analyzePropagationPattern(causalChain);
-    
-    // 추론 로직 (실제 AI처럼 동작)
-    const rootCauseHypotheses = this.generateRootCauseHypotheses(initialEvent, propagationPattern);
-    const mostLikelyRootCause = this.selectMostLikelyRootCause(rootCauseHypotheses);
-
-    return {
-      primary_root_cause: mostLikelyRootCause,
-      alternative_hypotheses: rootCauseHypotheses.filter(h => h !== mostLikelyRootCause),
-      propagation_analysis: propagationPattern,
-      confidence_level: this.calculateRootCauseConfidence(mostLikelyRootCause, causalChain),
-      supporting_evidence: this.gatherSupportingEvidence(mostLikelyRootCause, causalChain)
     };
   }
 
@@ -585,6 +803,209 @@ export class TimelineAnalyzer {
     
     return uniqueChain;
   }
+
+  // 새로 추가된 유틸리티 메서드들
+  calculateDuration(start, end) {
+    const diffMs = new Date(end) - new Date(start);
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (hours > 0) {
+      return `${hours}시간 ${minutes}분`;
+    } else {
+      return `${minutes}분`;
+    }
+  }
+
+  translateEventType(eventType) {
+    const translations = {
+      'high_cpu': 'CPU 사용률 과부하',
+      'memory_pressure': '메모리 부족',
+      'disk_full': '디스크 용량 부족',
+      'network_latency': '네트워크 지연',
+      'connection_timeout': '연결 타임아웃',
+      'service_unavailable': '서비스 중단'
+    };
+    return translations[eventType] || eventType;
+  }
+
+  generateSymptomDescription(type, servers, events) {
+    const serverCount = servers.length;
+    const eventCount = events.length;
+    const eventType = this.translateEventType(type);
+    
+    if (serverCount === 1) {
+      return `${servers[0]} 서버에서 ${eventType} 현상이 ${eventCount}회 발생`;
+    } else {
+      return `${serverCount}대 서버에서 ${eventType} 현상이 총 ${eventCount}회 발생`;
+    }
+  }
+
+  classifySystemType(serverId) {
+    if (serverId.includes('k8s-')) return 'Kubernetes';
+    if (serverId.includes('db-')) return 'Database';
+    if (serverId.includes('web-')) return 'Web Server';
+    if (serverId.includes('cache-')) return 'Cache';
+    if (serverId.includes('api-')) return 'API';
+    if (serverId.includes('app-')) return 'Application';
+    return 'Unknown';
+  }
+
+  getSystemCriticality(systemType) {
+    const criticalityMap = {
+      'Database': 'critical',
+      'Kubernetes': 'high',
+      'API': 'high',
+      'Application': 'medium',
+      'Web Server': 'medium',
+      'Cache': 'low'
+    };
+    return criticalityMap[systemType] || 'medium';
+  }
+
+  analyzePropagationPath(whatHappened) {
+    const allServers = [];
+    const allSymptoms = [];
+    
+    whatHappened.forEach(incident => {
+      incident.primary_symptoms.forEach(symptom => {
+        allSymptoms.push({
+          type: symptom.type,
+          servers: symptom.affected_servers,
+          time: incident.timeframe.split(' ~ ')[0]
+        });
+        allServers.push(...symptom.affected_servers);
+      });
+    });
+    
+    // 시간순으로 정렬
+    allSymptoms.sort((a, b) => new Date(a.time) - new Date(b.time));
+    
+    return allSymptoms.map(symptom => ({
+      time: symptom.time,
+      symptom_type: symptom.type,
+      servers: symptom.servers
+    }));
+  }
+  
+  inferImmediateCause(firstSymptom) {
+    // 직접적 원인 추론
+    const symptomCauses = {
+      'CPU 사용률 과부하': {
+        cause: 'CPU 자원 경쟁',
+        explanation: '고부하 프로세스로 인한 CPU 사용률 급증'
+      },
+      '메모리 부족': {
+        cause: '메모리 리소스 고갈',
+        explanation: '메모리 사용량이 물리적 한계에 도달'
+      },
+      '네트워크 지연': {
+        cause: '네트워크 혼잡',
+        explanation: '과도한 트래픽 또는 네트워크 구성 문제'
+      }
+    };
+    
+    return symptomCauses[firstSymptom.type] || {
+      cause: '시스템 리소스 이상',
+      explanation: '정확한 원인 추가 조사 필요'
+    };
+  }
+  
+  identifyContributingFactors(whatHappened) {
+    const factors = [];
+    
+    // 다양한 증상 유형 분석
+    const symptomTypes = new Set();
+    whatHappened.forEach(incident => {
+      incident.primary_symptoms.forEach(symptom => {
+        symptomTypes.add(symptom.type);
+      });
+    });
+    
+    // 동시다발적 증상이 있는 경우
+    if (symptomTypes.size > 1) {
+      factors.push({
+        factor: '복합 이벤트 발생',
+        significance: 'high',
+        explanation: `${symptomTypes.size}가지 유형의 증상이 동시다발적으로 발생`
+      });
+    }
+    
+    // 증상 지속 시간이 긴 경우
+    const longestIncident = whatHappened.reduce((longest, current) => {
+      const currentDuration = this.parseDuration(current.duration);
+      const longestDuration = longest ? this.parseDuration(longest.duration) : 0;
+      return currentDuration > longestDuration ? current : longest;
+    }, null);
+    
+    if (longestIncident && this.parseDuration(longestIncident.duration) > 30) {
+      factors.push({
+        factor: '장기 지속성 이벤트',
+        significance: 'medium',
+        explanation: `가장 긴 장애가 ${longestIncident.duration} 동안 지속됨`
+      });
+    }
+    
+    return factors;
+  }
+  
+  parseDuration(durationString) {
+    // "2시간 30분" 또는 "45분" 형식의 문자열에서 분 단위로 변환
+    const hourMatch = durationString.match(/(\d+)시간/);
+    const minuteMatch = durationString.match(/(\d+)분/);
+    
+    let totalMinutes = 0;
+    if (hourMatch) totalMinutes += parseInt(hourMatch[1]) * 60;
+    if (minuteMatch) totalMinutes += parseInt(minuteMatch[1]);
+    
+    return totalMinutes;
+  }
+  
+  calculateHypothesisConfidence(rootCauseAnalysis) {
+    if (!rootCauseAnalysis.underlying_cause) return 0;
+    
+    let confidence = rootCauseAnalysis.underlying_cause.confidence || 0.5;
+    
+    // 여러 요인 존재 시 신뢰도 감소
+    if (rootCauseAnalysis.contributing_factors.length > 1) {
+      confidence *= 0.9;
+    }
+    
+    return Math.min(confidence, 1.0);
+  }
+  
+  generateDefaultImmediateActions(analysis) {
+    const actions = [];
+    
+    // 영향받은 시스템 기반 기본 조치
+    if (analysis.where_occurred && analysis.where_occurred.affected_systems) {
+      analysis.where_occurred.affected_systems.forEach(system => {
+        switch (system.type) {
+          case 'Database':
+            actions.push('데이터베이스 연결 풀 재설정');
+            actions.push('긴 트랜잭션 확인 및 롤백 검토');
+            break;
+          case 'Web Server':
+            actions.push('웹 서버 프로세스 재시작');
+            actions.push('로드 밸런서 상태 확인');
+            break;
+          case 'Kubernetes':
+            actions.push('문제 파드 재시작');
+            actions.push('노드 상태 확인');
+            break;
+        }
+      });
+    }
+    
+    // 기본 대응 조치
+    if (actions.length === 0) {
+      actions.push('영향받은 서비스 상태 점검');
+      actions.push('문제 서버 재부팅 고려');
+      actions.push('추가 모니터링 강화');
+    }
+    
+    return actions;
+  }
 }
 
 // 이벤트 상관관계 분석기
@@ -616,5 +1037,12 @@ class AutoReportGenerator {
   generateReport(analysis) {
     // 리포트 생성 로직
     return {};
+  }
+}
+
+// 운영 지식베이스 (별도 파일로 구현됨)
+class OperationalKnowledgeBase {
+  constructor() {
+    // 실제 구현은 별도 파일에 있음
   }
 } 

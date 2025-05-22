@@ -119,6 +119,7 @@ export function generateDummyData(count = 30) {
 export default class DummyDataGenerator {
   constructor() {
     this.serverIds = [...SERVER_IDS];
+    this.incidentPeriods = this.generateIncidentPeriods(); // 장애 발생 구간 생성
   }
   
   getServers(count = 30) {
@@ -146,6 +147,170 @@ export default class DummyDataGenerator {
     }
     
     return data.reverse();
+  }
+
+  // 24시간 × 144개 타임스탬프 (10분 간격) 생성
+  generateTimeSeriesForPeriod(startTime, endTime) {
+    const data = {};
+    const servers = this.serverIds;
+    
+    servers.forEach(serverId => {
+      data[serverId] = [];
+      
+      const current = new Date(startTime);
+      while (current <= endTime) {
+        // 정상 구간 vs 장애 구간 구분하여 데이터 생성
+        const isIncidentPeriod = this.isIncidentPeriod(current);
+        const metrics = isIncidentPeriod 
+          ? this.generateIncidentMetrics(serverId, current)
+          : this.generateNormalMetrics(serverId, current);
+          
+        data[serverId].push({
+          timestamp: new Date(current),
+          metrics: metrics
+        });
+        
+        current.setMinutes(current.getMinutes() + 10); // 10분 간격
+      }
+    });
+    
+    return data;
+  }
+
+  // 장애 발생 구간 생성 (24시간 중 3-4시간 정도 장애 상황 발생)
+  generateIncidentPeriods() {
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    
+    // 3-4개의 장애 상황 생성
+    const incidentCount = Math.floor(Math.random() * 2) + 2; // 2-3개
+    const incidents = [];
+    
+    for (let i = 0; i < incidentCount; i++) {
+      // 랜덤 시작 시간 (24시간 내)
+      const startOffset = Math.floor(Math.random() * 22 * 60 * 60 * 1000); // 22시간 내에서 시작 (끝나는 시간 고려)
+      const startTime = new Date(twentyFourHoursAgo.getTime() + startOffset);
+      
+      // 장애 지속 시간 (20분-2시간)
+      const durationMs = (Math.floor(Math.random() * 7) + 2) * 10 * 60 * 1000; // 20분-120분 (10분 간격)
+      const endTime = new Date(startTime.getTime() + durationMs);
+      
+      // 장애 유형
+      const incidentType = ['cpu_spike', 'memory_leak', 'network_latency'][Math.floor(Math.random() * 3)];
+      
+      // 영향받는 서버 (랜덤 선택, 10-40%)
+      const affectedServerCount = Math.floor(this.serverIds.length * (0.1 + Math.random() * 0.3));
+      const shuffledServers = [...this.serverIds].sort(() => 0.5 - Math.random());
+      const affectedServers = shuffledServers.slice(0, affectedServerCount);
+      
+      incidents.push({
+        start: startTime,
+        end: endTime,
+        type: incidentType,
+        affectedServers: affectedServers
+      });
+    }
+    
+    // 시간순 정렬
+    return incidents.sort((a, b) => a.start - b.start);
+  }
+
+  // 특정 시간이 장애 구간인지 확인
+  isIncidentPeriod(time) {
+    return this.incidentPeriods.some(incident => 
+      time >= incident.start && time <= incident.end
+    );
+  }
+
+  // 특정 시간에 영향받는 서버인지 확인
+  isAffectedServer(serverId, time) {
+    const incident = this.incidentPeriods.find(inc => 
+      time >= inc.start && time <= inc.end
+    );
+    
+    return incident && incident.affectedServers.includes(serverId);
+  }
+
+  // 특정 시간의 장애 유형 가져오기
+  getIncidentType(time) {
+    const incident = this.incidentPeriods.find(inc => 
+      time >= inc.start && time <= inc.end
+    );
+    
+    return incident ? incident.type : null;
+  }
+
+  // 정상 구간의 메트릭 생성
+  generateNormalMetrics(serverId, timestamp) {
+    const serverType = getServerType(serverId);
+    
+    // 서버 유형별 기본 메트릭 값 설정
+    const baseMetrics = {
+      'k8s-master': { cpu: 30, memory: 45, disk: 50 },
+      'k8s-worker': { cpu: 40, memory: 50, disk: 60 },
+      'k8s-etcd': { cpu: 25, memory: 40, disk: 55 },
+      'web-server': { cpu: 35, memory: 45, disk: 50 },
+      'db-server': { cpu: 45, memory: 60, disk: 70 },
+      'redis-server': { cpu: 30, memory: 70, disk: 40 },
+      'monitoring': { cpu: 25, memory: 40, disk: 60 }
+    }[serverType] || { cpu: 30, memory: 40, disk: 50 };
+    
+    // 랜덤 변동 추가 (±15%)
+    const variation = 15;
+    
+    return {
+      cpu: {
+        usage_percent: Math.min(85, Math.max(10, baseMetrics.cpu + (Math.random() * variation * 2 - variation))),
+        process_count: Math.floor(Math.random() * 50) + 50
+      },
+      memory: {
+        usage_percent: Math.min(85, Math.max(10, baseMetrics.memory + (Math.random() * variation * 2 - variation))),
+        total_gb: serverType.includes('db') ? 64 : (serverType.includes('k8s') ? 32 : 16)
+      },
+      disk: {
+        usage_percent: Math.min(85, Math.max(10, baseMetrics.disk + (Math.random() * variation * 2 - variation))),
+        io_wait_ms: Math.floor(Math.random() * 5) + 1
+      },
+      network: {
+        bandwidth_usage_percent: Math.floor(Math.random() * 30) + 10,
+        latency_ms: Math.floor(Math.random() * 10) + 5
+      }
+    };
+  }
+
+  // 장애 구간의 메트릭 생성
+  generateIncidentMetrics(serverId, timestamp) {
+    const isAffected = this.isAffectedServer(serverId, timestamp);
+    if (!isAffected) {
+      // 영향받지 않는 서버는 정상 메트릭 반환
+      return this.generateNormalMetrics(serverId, timestamp);
+    }
+    
+    const incidentType = this.getIncidentType(timestamp);
+    const serverType = getServerType(serverId);
+    const normalMetrics = this.generateNormalMetrics(serverId, timestamp);
+    
+    // 장애 유형별 메트릭 조정
+    switch (incidentType) {
+      case 'cpu_spike':
+        // CPU 사용률 급증 (85-98%)
+        normalMetrics.cpu.usage_percent = 85 + Math.random() * 13;
+        normalMetrics.cpu.process_count = Math.floor(normalMetrics.cpu.process_count * 1.5);
+        break;
+        
+      case 'memory_leak':
+        // 메모리 사용률 증가 (80-95%)
+        normalMetrics.memory.usage_percent = 80 + Math.random() * 15;
+        break;
+        
+      case 'network_latency':
+        // 네트워크 지연 증가 (100-500ms)
+        normalMetrics.network.latency_ms = 100 + Math.random() * 400;
+        normalMetrics.network.bandwidth_usage_percent = 70 + Math.random() * 20;
+        break;
+    }
+    
+    return normalMetrics;
   }
 }
 
